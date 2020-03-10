@@ -1,5 +1,7 @@
 For the most part, this workshop relies on pretty typical React Hooks stuff. This does brush against 1 very complicated thing though: the fact that `setInterval` doesn't play nice with React's scheduling model.
 
+The workshop mentions that `useInterval` is surprisingly tricky. IF any students are curious, you can share the following with them. But also, this is a very advanced topic and it's 100% OK to not understand this for now.
+
 Dan Abramov wrote a brilliant blog post about this: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 
 The final stretch goal asks students to identify the problem with this code:
