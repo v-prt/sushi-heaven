@@ -20,9 +20,9 @@ Our `Game` file has an array of items:
 
 ```js
 const items = [
-  { id: 'cursor', name: 'Cursor', cost: 10, value: 1 },
-  { id: 'grandma', name: 'Grandma', cost: 100, value: 10 },
-  { id: 'farm', name: 'Farm', cost: 1000, value: 80 },
+  { id: "cursor", name: "Cursor", cost: 10, value: 1 },
+  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
+  { id: "farm", name: "Farm", cost: 1000, value: 80 }
 ];
 ```
 
@@ -47,6 +47,8 @@ There are two additional "special" props we need: `numOwned` and `handleClick`.
 
 For `handleClick`, we want to pass a function. For now it can just log to the console; we need to add state for this to work.
 
+**Remember:** You should never put click-handlers on `<div>` or `<li>` elements. Only on things meant to be clicked on, like `<button>` and `<input>`.
+
 ## Exercise 2: Adding state
 
 At the top of our `Game` component, we have two static pieces of data:
@@ -57,7 +59,7 @@ const numCookies = 100;
 const purchasedItems = {
   cursor: 0,
   grandma: 0,
-  farm: 0,
+  farm: 0
 };
 ```
 
@@ -220,12 +222,12 @@ Here's how we would do this, in vanilla JS:
 
 ```js
 function handleKeydown() {
-  if (ev.code === 'Space') {
+  if (ev.code === "Space") {
     // Trigger here
   }
 }
 
-window.addEventListener('keydown', handleKeydown);
+window.addEventListener("keydown", handleKeydown);
 ```
 
 With React components, we always want to _clean up after ourselves_. We can do that with `window.removeEventListener`, as well as the _return callback_ we saw in the previous exercise.
