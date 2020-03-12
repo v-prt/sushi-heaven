@@ -47,6 +47,8 @@ There are two additional "special" props we need: `numOwned` and `handleClick`.
 
 For `handleClick`, we want to pass a function. For now it can just log to the console; we need to add state for this to work.
 
+**Remember:** You should never put click-handlers on `<div>` or `<li>` elements. Only on things meant to be clicked on, like `<button>` and `<input>`.
+
 ## Exercise 2: Adding state
 
 At the top of our `Game` component, we have two static pieces of data:
