@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 import cookieSrc from '../cookie.svg';
 
@@ -35,6 +36,7 @@ const Game = () => {
         <SectionTitle>Items:</SectionTitle>
         {/* TODO: Add <Item> instances here, 1 for each item type. */}
       </ItemArea>
+      <HomeLink to="/">Return home</HomeLink>
     </Wrapper>
   );
 };
@@ -85,6 +87,13 @@ const Indicator = styled.div`
 const Total = styled.h3`
   font-size: 28px;
   color: lime;
+`;
+
+const HomeLink = styled(Link)`
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #666;
 `;
 
 export default Game;
