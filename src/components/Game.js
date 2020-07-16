@@ -1,13 +1,13 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 
-import cookieSrc from '../cookie.svg';
+import cookieSrc from "../cookie.svg";
 
 const items = [
-  { id: 'cursor', name: 'Cursor', cost: 10, value: 1 },
-  { id: 'grandma', name: 'Grandma', cost: 100, value: 10 },
-  { id: 'farm', name: 'Farm', cost: 1000, value: 80 },
+  { id: "cursor", name: "Cursor", cost: 10, value: 1 },
+  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
+  { id: "farm", name: "Farm", cost: 1000, value: 80 },
 ];
 
 const Game = () => {
