@@ -4,12 +4,12 @@ At the top of our `Game` component, we have two static pieces of data:
 
 ```js
 // TODO: Replace this with React state!
-const numCookies = 100
+const numCookies = 100;
 const purchasedItems = {
   cursor: 0,
   grandma: 0,
   farm: 0,
-}
+};
 ```
 
 We want this data to be _dynamic_, so we'll need to use React state via a `useState` hook.
@@ -20,7 +20,7 @@ First, let's do `numCookies`. Here's what we want:
 - Clicking the cookie `<Button>` should increment it by 1
 - That value should be shown in the UI (at the top, inside `<Indicator>`)
 
-Implementing this is left as an exercise (if you're feeling lost, check out previous workshops for a refresher on how `useState` works!).
+Implementing this is left as an exercise. If you're feeling lost, check out previous workshop for a refresher on how `useState` works!
 
 Next, `purchasedItems`. This will also need to use a state hook.
 
@@ -45,9 +45,11 @@ The `cursor` item costs 10 cookies:
 
 If we buy a `cursor`, we should end up with this new state:
 
-numCookies = 90;
+- numCookies = 100;
++ numCookies = 90;
 purchasedItems = {
-  cursor: 1,
+-  cursor: 0,
++  cursor: 1,
   grandma: 0,
   farm: 0,
 };
@@ -60,13 +62,13 @@ _HINT:_ You'll need to have 2 separate state hooks. One for `numCookies` and one
 
 _HINT:_ When using an object as the state, you'll need to be careful not to overwrite other state values. For example, don't do this:
 
-```
-setPurchasedItems({ cursor: 1 })
+```js
+setPurchasedItems({ cursor: 1 });
 ```
 
 If you do this, you'll accidentally delete the `grandma` and `farm` items! Instead, you can use the "spread" operator:
 
-```
+```js
 const o = { apple: 10, banana: 2 }
 
 const updatedO = {
