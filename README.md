@@ -32,12 +32,6 @@ Open this exercise file: [exercise-4.md](__workshop/exercise-4.md)
 
 Open this exercise file: [exercise-5.md](__workshop/exercise-5.md)
 
----
-
-<center>🟡 - Minimally complete workshop (75%) - 🟡</center>
-
----
-
 ## Exercise 6: Focusing the first store item on mount
 
 Open this exercise file: [exercise-6.md](__workshop/exercise-6.md)
@@ -48,7 +42,7 @@ Open this exercise file: [exercise-7.md](__workshop/exercise-7.md)
 
 ---
 
-<center>🟢 - Complete workshop (100%) - 🟢</center>
+<center>🟡 - Minimally complete workshop (75%) - 🟡</center>
 
 ---
 
@@ -59,6 +53,12 @@ Open this exercise file: [exercise-8.md](__workshop/exercise-8.md)
 ## Exercise 9: Increased pricing
 
 Open this exercise file: [exercise-9.md](__workshop/exercise-9.md)
+
+---
+
+<center>🟢 - Complete workshop (100%) - 🟢</center>
+
+---
 
 ## Exercise 10: Add whimsy
 
