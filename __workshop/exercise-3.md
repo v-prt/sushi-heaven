@@ -6,11 +6,13 @@ Unfortunately, using `setInterval` with hooks is somewhat complicated. To solve 
 
 ```js
 useInterval(() => {
-  const numOfGeneratedCookies = calculateCookiesPerTick(purchasedItems)
+  const numOfGeneratedCookies = calculateCookiesPerTick(purchasedItems);
 
   // Add this number of cookies to the total
-}, 1000)
+}, 1000);
 ```
+
+> _NOTE:_ `useInterval` is a **custom hook**, and a particularly tricky / hard-to-understand one. The good news is that you can pretty much treat it as `window.setInterval`. Just be aware that you need to follow the Rules of Hooks (can't be used conditionally, must be inside a function component, etc).
 
 You'll need to write the `calculateCookiesPerTick` function yourself. This will require some data munging, since you need to iterate through each type of item, and figure out the total value of the items you have. For example, if you have 3 cursors and 1 farm, your total cookies per tick is 83 (1 × 3 + 80 × 1).
 
