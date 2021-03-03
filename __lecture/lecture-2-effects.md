@@ -1,8 +1,12 @@
+---
+marp: true
+---
+
 # UseEffect hook
 
 ---
 
-### Side effects
+## Side effects
 
 What happens when you want to do something _other_ than rendering to the screen?
 
@@ -14,7 +18,7 @@ What happens when you want to do something _other_ than rendering to the screen?
 
 ---
 
-### Doing something on scroll
+## Doing something on scroll
 
 Here's how we do this in vanilla JS:
 
@@ -264,21 +268,19 @@ Unsubscribes are processed **right before** the next update, and **right before*
 
 ---
 
-<img src='./assets/update-A.svg' />
+![](./assets/update-A.svg)
 
 ---
 
-<img src='./assets/update-B.svg' />
+![](./assets/update-B.svg)
 
 ---
 
-<img src='./assets/update-C.svg' />
+![](./assets/update-C.svg)
 
 ---
 
-import updateDSrc from './assets/update-D.svg';
-
-<img src='./assets/update-D.svg' />
+![](./assets/update-D.svg)
 
 ---
 

@@ -1,3 +1,7 @@
+---
+marp: true
+---
+
 # [5-1]
 
 # React Effects

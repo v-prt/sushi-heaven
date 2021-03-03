@@ -1,4 +1,24 @@
-# Workshop: Cookie Clicker
+# 5-1 - The Cookie Clicker
+
+## 🦊 Pre-lecture
+
+⏲️ _Estimated time required: 60 minutes._
+
+- [React Hooks Tutorial | The useEffect Hook](https://www.youtube.com/watch?v=XdAMiT6P-7c&list=PLMPgoZdlPumdViYuJPRQ7wqrztNp3ZcuE&index=1)
+- [React Hooks Tutorial | The useRef Hook](https://www.youtube.com/watch?v=dSs_T6e4ZxI&list=PLMPgoZdlPumdViYuJPRQ7wqrztNp3ZcuE&index=2)
+- https://reactjs.org/docs/hooks-effect.html
+
+---
+
+## 🦉 Lecture
+
+- [lecture-1-housekeeping.md](__lecture/lecture-1-housekeeping.md)
+- [lecture-2-effects.md](__lecture/lecture-2-effects.md)
+- [lecture-3-refs.md](__lecture/lecture-3-refs.md)
+
+---
+
+## ⚡ Exercises
 
 This workshop challenges you to build an **idle game**.
 
