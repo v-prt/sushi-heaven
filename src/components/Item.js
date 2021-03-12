@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const Item = ({ item, numOwned, handleClick }) => {
   return (
-    <Button id={item.id} onClick={handleClick}>
+    <Button id={item.id} onClick={() => handleClick(item, numOwned)}>
       <div>
         <Name>{item.name}</Name>
         <Details>

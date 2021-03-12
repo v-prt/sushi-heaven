@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -12,12 +12,25 @@ const items = [
 ];
 
 const Game = () => {
-  // TODO: Replace this with React state!
-  const numCookies = 100;
-  const purchasedItems = {
+  const [numCookies, setNumCookies] = useState(100);
+  const [purchasedItems, setPurchasedItems] = useState({
     cursor: 0,
     grandma: 0,
     farm: 0,
+  });
+
+  const handleClick = (item) => {
+    if (numCookies < item.cost) {
+      alert("You do not have enough cookies to make this purchase!");
+      return;
+    } else {
+      setNumCookies(numCookies - item.cost);
+      setPurchasedItems({
+        // use spread operator to prevent overwriting other state values
+        ...purchasedItems,
+        [item.id]: purchasedItems[item.id] + 1,
+      });
+    }
   };
 
   return (
@@ -28,7 +41,11 @@ const Game = () => {
           {/* TODO: Calcuate the cookies per second and show it here: */}
           <strong>0</strong> cookies per second
         </Indicator>
-        <Button>
+        <Button
+          onClick={() => {
+            setNumCookies(numCookies + 1);
+          }}
+        >
           <Cookie src={cookieSrc} />
         </Button>
       </GameArea>
@@ -40,9 +57,7 @@ const Game = () => {
             <Item
               item={item}
               numOwned={purchasedItems[item.id]}
-              handleClick={(e) => {
-                console.log("Clicked!");
-              }}
+              handleClick={handleClick}
             />
           );
         })}
