@@ -88,9 +88,14 @@ const Game = () => {
       <ItemArea>
         <SectionTitle>Items:</SectionTitle>
         {items.map((item) => {
+          let firstItem;
+          if (items.indexOf(item) === 0) {
+            firstItem = true;
+          }
           return (
             <Item
               item={item}
+              firstItem={firstItem}
               numOwned={purchasedItems[item.id]}
               buyItem={() => buyItem(item)}
             />

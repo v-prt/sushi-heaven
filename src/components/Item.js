@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-const Item = ({ item, numOwned, buyItem }) => {
+const Item = ({ item, firstItem, numOwned, buyItem }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (firstItem) {
+      ref.current.focus();
+    }
+  }, [firstItem]);
+
   return (
-    <Button id={item.id} onClick={buyItem}>
+    <Button id={item.id} onClick={buyItem} ref={ref}>
       <div>
         <Name>{item.name}</Name>
         <Details>
