@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -48,6 +48,13 @@ const Game = () => {
     });
     return sum;
   };
+
+  useEffect(() => {
+    document.title = `${numCookies} cookies - Cookie Clicker Workshop`;
+    return () => {
+      document.title = `Cookie Clicker Workshop`;
+    };
+  }, [numCookies]);
 
   return (
     <Wrapper>
