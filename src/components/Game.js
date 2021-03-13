@@ -20,7 +20,11 @@ const Game = () => {
     farm: 0,
   });
 
-  const handleClick = (item) => {
+  const makeCookie = () => {
+    setNumCookies(numCookies + 1);
+  };
+
+  const buyItem = (item) => {
     if (numCookies < item.cost) {
       alert("You do not have enough cookies to make this purchase!");
       return;
@@ -56,6 +60,18 @@ const Game = () => {
     };
   }, [numCookies]);
 
+  useEffect(() => {
+    const handleKeyDown = (ev) => {
+      if (ev.code === "Space") {
+        makeCookie();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  });
+
   return (
     <Wrapper>
       <GameArea>
@@ -64,11 +80,7 @@ const Game = () => {
           <strong>{calculateCookiesPerTick(purchasedItems)}</strong> cookies per
           second
         </Indicator>
-        <Button
-          onClick={() => {
-            setNumCookies(numCookies + 1);
-          }}
-        >
+        <Button onClick={makeCookie}>
           <Cookie src={cookieSrc} />
         </Button>
       </GameArea>
@@ -80,7 +92,7 @@ const Game = () => {
             <Item
               item={item}
               numOwned={purchasedItems[item.id]}
-              handleClick={handleClick}
+              buyItem={() => buyItem(item)}
             />
           );
         })}

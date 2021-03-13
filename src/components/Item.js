@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-const Item = ({ item, numOwned, handleClick }) => {
+const Item = ({ item, numOwned, buyItem }) => {
   return (
-    <Button id={item.id} onClick={() => handleClick(item, numOwned)}>
+    <Button id={item.id} onClick={buyItem}>
       <div>
         <Name>{item.name}</Name>
         <Details>
