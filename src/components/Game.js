@@ -9,24 +9,16 @@ import useInterval from "../hooks/use-interval.hook";
 const items = [
   { id: "cursor", name: "Cursor", cost: 10, value: 1 },
   { id: "grandma", name: "Grandma", cost: 100, value: 10 },
+  {
+    id: "megaCursor",
+    name: "Mega Cursor",
+    cost: 500,
+    value: 5,
+  },
   { id: "farm", name: "Farm", cost: 1000, value: 80 },
 ];
 
-// creating reusable hooks
-const useKeyDown = (code, callback) => {
-  useEffect(() => {
-    const handleKeyDown = () => {
-      if (code === "Space") {
-        callback();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  });
-};
-
+// REUSABLE CUSTOM HOOKS
 const useDocumentTitle = (title, fallbackTitle) => {
   useEffect(() => {
     document.title = title;
@@ -38,22 +30,47 @@ const useDocumentTitle = (title, fallbackTitle) => {
   }, [title]);
 };
 
+// switched to keyup so you can't hold down spacebar to make cookies
+// TODO: fix enter key acting like spacebar
+const useKeyUp = (code, callback) => {
+  useEffect(() => {
+    const handleKeyUp = () => {
+      if (code === "Space") {
+        callback();
+      }
+    };
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  });
+};
+
 const Game = () => {
   const [numCookies, setNumCookies] = useState(100);
+  const [cookiesPerClick, setCookiesPerClick] = useState(1);
   const [purchasedItems, setPurchasedItems] = useState({
     cursor: 0,
     grandma: 0,
+    megaCursor: 0,
     farm: 0,
   });
 
-  const makeCookie = () => {
-    setNumCookies(numCookies + 1);
+  const makeCookies = () => {
+    setNumCookies(numCookies + cookiesPerClick);
   };
 
   const buyItem = (item) => {
     if (numCookies < item.cost) {
       alert("You do not have enough cookies to make this purchase!");
       return;
+    } else if (item.id === "megaCursor") {
+      setNumCookies(numCookies - item.cost);
+      setCookiesPerClick(cookiesPerClick + item.value);
+      setPurchasedItems({
+        ...purchasedItems,
+        [item.id]: purchasedItems["megaCursor"] + 1,
+      });
     } else {
       setNumCookies(numCookies - item.cost);
       setPurchasedItems({
@@ -64,37 +81,39 @@ const Game = () => {
     }
   };
 
+  const calculateCookiesPerTick = (purchasedItems) => {
+    let num = 0;
+    num =
+      1 * purchasedItems["cursor"] +
+      10 * purchasedItems["grandma"] +
+      80 * purchasedItems["farm"];
+    return num;
+  };
+
+  const cookiesPerSecond = calculateCookiesPerTick(purchasedItems);
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    const numOfGeneratedCookies = calculateCookiesPerTick(purchasedItems);
-    setNumCookies(numCookies + numOfGeneratedCookies);
+    setNumCookies(numCookies + cookiesPerSecond);
   }, 1000);
-
-  const calculateCookiesPerTick = (purchasedItems) => {
-    let sum = 0;
-    // iterate through each item and figure out total value of items
-    items.forEach((item) => {
-      sum += purchasedItems[item.id] * item.value;
-    });
-    return sum;
-  };
 
   // calling the hooks
   useDocumentTitle(
     `${numCookies} cookies - Cookie Clicker Workshop`,
     "Cookie Clicker Workshop"
   );
-  useKeyDown("Space", makeCookie);
+  useKeyUp("Space", makeCookies);
 
   return (
     <Wrapper>
       <GameArea>
         <Indicator>
           <Total>{numCookies} cookies</Total>
-          <strong>{calculateCookiesPerTick(purchasedItems)}</strong> cookies per
-          second
+          <strong>{cookiesPerSecond}</strong> cookies per second.
+          <div>
+            <strong>{cookiesPerClick}</strong> cookies per click.
+          </div>
         </Indicator>
-        <Button onClick={makeCookie}>
+        <Button onMouseDown={makeCookies}>
           <Cookie src={cookieSrc} />
         </Button>
       </GameArea>

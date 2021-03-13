@@ -9,12 +9,20 @@ const Item = ({ item, firstItem, numOwned, buyItem }) => {
     }
   }, [firstItem]);
 
+  let itemUse = () => {
+    if (item.id === "megaCursor") {
+      return `Increases cookies per click by ${item.value}.`;
+    } else {
+      return `Produces ${item.value} cookies/second.`;
+    }
+  };
+
   return (
-    <Button id={item.id} onClick={buyItem} ref={ref}>
+    <Button id={item.id} onMouseDown={buyItem} ref={ref}>
       <div>
         <Name>{item.name}</Name>
         <Details>
-          Cost: {item.cost} cookie(s). Produces {item.value} cookies/second.
+          Cost: {item.cost} cookies. {itemUse()}
         </Details>
       </div>
       <NumOwned>{numOwned}</NumOwned>
