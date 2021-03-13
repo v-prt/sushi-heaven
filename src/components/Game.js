@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import cookieSrc from "../cookie.svg";
 import Item from "./Item";
+import useInterval from "../hooks/use-interval.hook";
 
 const items = [
   { id: "cursor", name: "Cursor", cost: 10, value: 1 },
@@ -33,13 +34,28 @@ const Game = () => {
     }
   };
 
+  // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
+  useInterval(() => {
+    const numOfGeneratedCookies = calculateCookiesPerTick(purchasedItems);
+    setNumCookies(numCookies + numOfGeneratedCookies);
+  }, 1000);
+
+  const calculateCookiesPerTick = (purchasedItems) => {
+    let sum = 0;
+    // iterate through each item and figure out total value of items
+    items.forEach((item) => {
+      sum += purchasedItems[item.id] * item.value;
+    });
+    return sum;
+  };
+
   return (
     <Wrapper>
       <GameArea>
         <Indicator>
           <Total>{numCookies} cookies</Total>
-          {/* TODO: Calcuate the cookies per second and show it here: */}
-          <strong>0</strong> cookies per second
+          <strong>{calculateCookiesPerTick(purchasedItems)}</strong> cookies per
+          second
         </Indicator>
         <Button
           onClick={() => {
