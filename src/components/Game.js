@@ -12,6 +12,32 @@ const items = [
   { id: "farm", name: "Farm", cost: 1000, value: 80 },
 ];
 
+// creating reusable hooks
+const useKeyDown = (code, callback) => {
+  useEffect(() => {
+    const handleKeyDown = () => {
+      if (code === "Space") {
+        callback();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  });
+};
+
+const useDocumentTitle = (title, fallbackTitle) => {
+  useEffect(() => {
+    document.title = title;
+    return () => {
+      document.title = fallbackTitle;
+    };
+    // warning: "React Hook useEffect has a missing dependency: 'fallbackTitle'. Either include it or remove the dependency array"
+    // not sure how to fix but seems to work anyway
+  }, [title]);
+};
+
 const Game = () => {
   const [numCookies, setNumCookies] = useState(100);
   const [purchasedItems, setPurchasedItems] = useState({
@@ -53,24 +79,12 @@ const Game = () => {
     return sum;
   };
 
-  useEffect(() => {
-    document.title = `${numCookies} cookies - Cookie Clicker Workshop`;
-    return () => {
-      document.title = `Cookie Clicker Workshop`;
-    };
-  }, [numCookies]);
-
-  useEffect(() => {
-    const handleKeyDown = (ev) => {
-      if (ev.code === "Space") {
-        makeCookie();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  });
+  // calling the hooks
+  useDocumentTitle(
+    `${numCookies} cookies - Cookie Clicker Workshop`,
+    "Cookie Clicker Workshop"
+  );
+  useKeyDown("Space", makeCookie);
 
   return (
     <Wrapper>
