@@ -68,12 +68,14 @@ export default createGlobalStyle`
   }
 
   a {
-    color: #ff4da6;
+    font-family: "Raleway", sans-serif;
+    font-size: 1.2rem;
+    color: white;
     text-decoration: none;
     transition: 0.3s ease-in-out;
     &:hover {
       cursor: pointer;
-      color: white;
+      color: #ff4da6;
       font-weight: bold;
     }
   }

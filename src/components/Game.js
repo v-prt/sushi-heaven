@@ -137,13 +137,15 @@ const Game = () => {
 
       <Factory>
         <Indicator>
-          <Total>Cookies: {displayNum}</Total>
-          <strong>{cookiesPerSec}</strong> cookies per second
-          <div>
+          <Total>COOKIES: {displayNum}</Total>
+          <p>
+            <strong>{cookiesPerSec}</strong> cookies per second
+          </p>
+          <p>
             <strong>{cookiesPerClick}</strong> cookies per click
-          </div>
+          </p>
         </Indicator>
-        <SectionTitle>Upgrades</SectionTitle>
+        <SectionTitle>UPGRADES</SectionTitle>
         <Upgrades>
           {upgrades.map((item) => {
             let firstItem;
@@ -197,6 +199,7 @@ const Factory = styled.div`
   align-items: center;
   border: 6px solid white;
   border-radius: 10px;
+  width: 400px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
   background: linear-gradient(#b3daff, #ffb3d9);
 `;
@@ -204,15 +207,22 @@ const Factory = styled.div`
 const Indicator = styled.div`
   text-align: center;
   margin: 30px;
+  p {
+    font-size: 1.2rem;
+  }
 `;
 
 const Total = styled.h3`
-  font-size: 3rem;
+  font-size: 2.5rem;
+  font-family: "Merienda", cursive;
+  font-weight: bold;
+  text-shadow: 0 0 10px white;
 `;
 
 const SectionTitle = styled.h3`
+  font-family: "Merienda", cursive;
   text-align: center;
-  font-size: 32px;
+  font-size: 1.8rem;
   background: #80c1ff;
   width: 100%;
   padding: 10px 0;
@@ -222,6 +232,7 @@ const SectionTitle = styled.h3`
 
 const Upgrades = styled.div`
   border-bottom: 6px solid white;
+  width: 100%;
 `;
 
 const HomeLink = styled(Link)`

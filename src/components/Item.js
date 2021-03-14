@@ -21,9 +21,8 @@ const Item = ({ item, firstItem, itemCost, numOwned, buyItem }) => {
     <Button id={item.id} onMouseDown={buyItem} ref={ref}>
       <ItemDetails>
         <Name>{item.name}</Name>
-        <Info>
-          Cost: {itemCost} cookies. {itemUse()}
-        </Info>
+        <Cost>Cost: {itemCost} cookies.</Cost>
+        <Use>{itemUse()}</Use>
       </ItemDetails>
       <NumOwned>{numOwned}</NumOwned>
     </Button>
@@ -33,7 +32,7 @@ const Item = ({ item, firstItem, itemCost, numOwned, buyItem }) => {
 const Button = styled.button`
   background: transparent;
   color: white;
-  width: 400px;
+  width: 100%;
   padding: 10px 0;
   border-style: none;
   border-bottom: 1px dashed white;
@@ -50,24 +49,29 @@ const Button = styled.button`
   }
 `;
 
-const Name = styled.p`
-  font-weight: bold;
-  font-size: 1.5rem;
-  text-align: left;
-`;
-
 const ItemDetails = styled.div`
   padding-left: 10px;
+  text-align: left;
 `;
 
-const Info = styled.p`
-  text-align: left;
+const Name = styled.p`
+  font-family: "Merienda", cursive;
+  font-weight: bold;
+  font-size: 1.7rem;
+  margin-bottom: 10px;
+`;
+
+const Cost = styled.p`
+  font-size: 1.1rem;
+`;
+
+const Use = styled.p`
+  font-size: 1.1rem;
 `;
 
 const NumOwned = styled.p`
   font-weight: bold;
-  font-size: 1.5rem;
-  text-align: right;
+  font-size: 3rem;
   padding-right: 10px;
 `;
 

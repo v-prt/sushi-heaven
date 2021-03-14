@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <Wrapper>
       <Title>Cookie Heaven</Title>
-      <Link to="/game">Start Game</Link>
+      <Link to="/game">~ Start Game ~</Link>
     </Wrapper>
   );
 };
@@ -19,8 +19,10 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 48px;
+  font-size: 5rem;
   margin-bottom: 32px;
+  font-family: "Emilys Candy";
+  text-shadow: 0 0 10px white;
 `;
 
 export default Home;
