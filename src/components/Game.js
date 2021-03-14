@@ -49,11 +49,17 @@ const useKeyUp = (code, callback) => {
 const Game = () => {
   const [numCookies, setNumCookies] = useState(100);
   const [cookiesPerClick, setCookiesPerClick] = useState(1);
-  const [purchasedItems, setPurchasedItems] = useState({
+  const [numItemsOwned, setNumItemsOwned] = useState({
     cursor: 0,
     grandma: 0,
     megaCursor: 0,
     farm: 0,
+  });
+  const [itemCost, setItemCost] = useState({
+    cursor: 10,
+    grandma: 100,
+    megaCursor: 500,
+    farm: 1000,
   });
 
   const makeCookies = () => {
@@ -61,39 +67,47 @@ const Game = () => {
   };
 
   const buyItem = (item) => {
-    if (numCookies < item.cost) {
+    if (numCookies < itemCost[item.id]) {
       alert("You do not have enough cookies to make this purchase!");
       return;
     } else if (item.id === "megaCursor") {
-      setNumCookies(numCookies - item.cost);
+      setNumCookies(numCookies - itemCost[item.id]);
       setCookiesPerClick(cookiesPerClick + item.value);
-      setPurchasedItems({
-        ...purchasedItems,
-        [item.id]: purchasedItems["megaCursor"] + 1,
+      setNumItemsOwned({
+        // use spread operator to prevent overwriting other state values
+        ...numItemsOwned,
+        [item.id]: numItemsOwned[item.id] + 1,
+      });
+      setItemCost({
+        ...itemCost,
+        [item.id]: Math.floor(itemCost[item.id] * 1.25),
       });
     } else {
-      setNumCookies(numCookies - item.cost);
-      setPurchasedItems({
-        // use spread operator to prevent overwriting other state values
-        ...purchasedItems,
-        [item.id]: purchasedItems[item.id] + 1,
+      setNumCookies(numCookies - itemCost[item.id]);
+      setNumItemsOwned({
+        ...numItemsOwned,
+        [item.id]: numItemsOwned[item.id] + 1,
+      });
+      setItemCost({
+        ...itemCost,
+        [item.id]: Math.floor(itemCost[item.id] * 1.25),
       });
     }
   };
 
-  const calculateCookiesPerTick = (purchasedItems) => {
+  const calcCookiesPerSec = (numItemsOwned) => {
     let num = 0;
     num =
-      1 * purchasedItems["cursor"] +
-      10 * purchasedItems["grandma"] +
-      80 * purchasedItems["farm"];
+      1 * numItemsOwned["cursor"] +
+      10 * numItemsOwned["grandma"] +
+      80 * numItemsOwned["farm"];
     return num;
   };
 
-  const cookiesPerSecond = calculateCookiesPerTick(purchasedItems);
+  const cookiesPerSec = calcCookiesPerSec(numItemsOwned);
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    setNumCookies(numCookies + cookiesPerSecond);
+    setNumCookies(numCookies + cookiesPerSec);
   }, 1000);
 
   // calling the hooks
@@ -108,7 +122,7 @@ const Game = () => {
       <GameArea>
         <Indicator>
           <Total>{numCookies} cookies</Total>
-          <strong>{cookiesPerSecond}</strong> cookies per second.
+          <strong>{cookiesPerSec}</strong> cookies per second.
           <div>
             <strong>{cookiesPerClick}</strong> cookies per click.
           </div>
@@ -129,7 +143,8 @@ const Game = () => {
             <Item
               item={item}
               firstItem={firstItem}
-              numOwned={purchasedItems[item.id]}
+              itemCost={itemCost[item.id]}
+              numOwned={numItemsOwned[item.id]}
               buyItem={() => buyItem(item)}
             />
           );
