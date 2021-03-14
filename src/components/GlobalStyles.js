@@ -63,12 +63,18 @@ export default createGlobalStyle`
 
   body {
     line-height: 1.25;
-    background: #222;
+    background: linear-gradient(#ffb3d9, #b3daff);
     color: white;
   }
 
   a {
-    color: #69ffcf;
+    color: #ff4da6;
     text-decoration: none;
+    transition: 0.3s ease-in-out;
+    &:hover {
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+    }
   }
 `;

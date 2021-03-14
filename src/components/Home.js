@@ -5,8 +5,8 @@ import styled from "styled-components";
 const Home = () => {
   return (
     <Wrapper>
-      <Title>Cookie game</Title>
-      <Link to="/game">Go to game</Link>
+      <Title>Cookie Heaven</Title>
+      <Link to="/game">Start Game</Link>
     </Wrapper>
   );
 };

@@ -19,12 +19,12 @@ const Item = ({ item, firstItem, itemCost, numOwned, buyItem }) => {
 
   return (
     <Button id={item.id} onMouseDown={buyItem} ref={ref}>
-      <div>
+      <ItemDetails>
         <Name>{item.name}</Name>
-        <Details>
+        <Info>
           Cost: {itemCost} cookies. {itemUse()}
-        </Details>
-      </div>
+        </Info>
+      </ItemDetails>
       <NumOwned>{numOwned}</NumOwned>
     </Button>
   );
@@ -34,16 +34,19 @@ const Button = styled.button`
   background: transparent;
   color: white;
   width: 400px;
-  margin: 10px;
-  padding: 10px 10px 10px 0;
+  padding: 10px 0;
   border-style: none;
-  border-bottom: 1px solid white;
+  border-bottom: 1px dashed white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: 0.3s ease-in-out;
   &:hover {
     cursor: pointer;
-    color: #4db8ff;
+    color: #ff4da6;
+  }
+  &:last-child {
+    border-bottom: none;
   }
 `;
 
@@ -53,7 +56,11 @@ const Name = styled.p`
   text-align: left;
 `;
 
-const Details = styled.p`
+const ItemDetails = styled.div`
+  padding-left: 10px;
+`;
+
+const Info = styled.p`
   text-align: left;
 `;
 
@@ -61,7 +68,7 @@ const NumOwned = styled.p`
   font-weight: bold;
   font-size: 1.5rem;
   text-align: right;
-  margin-left: 40px;
+  padding-right: 10px;
 `;
 
 export default Item;

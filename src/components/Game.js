@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-import cookieSrc from "../cookie.svg";
+import cookieSrc from "../real-cookie.png";
 import Item from "./Item";
 import useInterval from "../hooks/use-interval.hook";
 
@@ -18,7 +18,7 @@ const items = [
   { id: "farm", name: "Farm", cost: 1000, value: 80 },
 ];
 
-// REUSABLE CUSTOM HOOKS
+// REUSABLE CUSTOM HOOK
 const useDocumentTitle = (title, fallbackTitle) => {
   useEffect(() => {
     document.title = title;
@@ -30,12 +30,12 @@ const useDocumentTitle = (title, fallbackTitle) => {
   }, [title]);
 };
 
-// switched to keyup so you can't hold down spacebar to make cookies
-// TODO: fix enter key acting like spacebar
+// REUSABLE CUSTOM HOOK
+// switched to keyup to prevent holding down spacebar to make cookies
 const useKeyUp = (code, callback) => {
   useEffect(() => {
-    const handleKeyUp = () => {
-      if (code === "Space") {
+    const handleKeyUp = (ev) => {
+      if (ev.code === code) {
         callback();
       }
     };
@@ -110,104 +110,109 @@ const Game = () => {
     setNumCookies(numCookies + cookiesPerSec);
   }, 1000);
 
-  // calling the hooks
-  useDocumentTitle(
-    `${numCookies} cookies - Cookie Clicker Workshop`,
-    "Cookie Clicker Workshop"
-  );
+  // calling the custom hooks
+  useDocumentTitle(`${numCookies} cookies - Cookie Heaven`, "Cookie Heaven");
   useKeyUp("Space", makeCookies);
 
   return (
     <Wrapper>
       <GameArea>
-        <Indicator>
-          <Total>{numCookies} cookies</Total>
-          <strong>{cookiesPerSec}</strong> cookies per second.
-          <div>
-            <strong>{cookiesPerClick}</strong> cookies per click.
-          </div>
-        </Indicator>
-        <Button onMouseDown={makeCookies}>
+        <CookieBtn onMouseDown={makeCookies}>
           <Cookie src={cookieSrc} />
-        </Button>
+        </CookieBtn>
       </GameArea>
 
-      <ItemArea>
-        <SectionTitle>Items:</SectionTitle>
-        {items.map((item) => {
-          let firstItem;
-          if (items.indexOf(item) === 0) {
-            firstItem = true;
-          }
-          return (
-            <Item
-              item={item}
-              firstItem={firstItem}
-              itemCost={itemCost[item.id]}
-              numOwned={numItemsOwned[item.id]}
-              buyItem={() => buyItem(item)}
-            />
-          );
-        })}
-      </ItemArea>
-      <HomeLink to="/">Return home</HomeLink>
+      <Factory>
+        <Indicator>
+          <Total>Cookies: {numCookies}</Total>
+          <strong>{cookiesPerSec}</strong> cookies per second
+          <div>
+            <strong>{cookiesPerClick}</strong> cookies per click
+          </div>
+        </Indicator>
+        <SectionTitle>Upgrades</SectionTitle>
+        <Upgrades>
+          {items.map((item) => {
+            let firstItem;
+            if (items.indexOf(item) === 0) {
+              firstItem = true;
+            }
+            return (
+              <Item
+                item={item}
+                firstItem={firstItem}
+                itemCost={itemCost[item.id]}
+                numOwned={numItemsOwned[item.id]}
+                buyItem={() => buyItem(item)}
+              />
+            );
+          })}
+        </Upgrades>
+        <HomeLink to="/">Quit (Return Home)</HomeLink>
+      </Factory>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
 `;
-const GameArea = styled.div`
-  flex: 1;
-  display: grid;
-  place-items: center;
-`;
-const Button = styled.button`
+const GameArea = styled.div``;
+
+const CookieBtn = styled.button`
   border: none;
   background: transparent;
+  margin-right: 50px;
   cursor: pointer;
+  // removes the ugly focus ring (not accessibility-friendly)
+  &:focus {
+    outline: none;
+  }
 `;
 
 const Cookie = styled.img`
-  width: 200px;
+  width: 300px;
 `;
 
-const ItemArea = styled.div`
-  height: 100%;
-  padding-right: 20px;
+const Factory = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  border: 6px solid white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  background: linear-gradient(#b3daff, #ffb3d9);
+`;
+
+const Indicator = styled.div`
+  text-align: center;
+  margin: 30px;
+`;
+
+const Total = styled.h3`
+  font-size: 3rem;
 `;
 
 const SectionTitle = styled.h3`
   text-align: center;
   font-size: 32px;
-  color: yellow;
+  background: #80c1ff;
+  width: 100%;
+  padding: 10px 0;
+  border-top: 6px solid white;
+  border-bottom: 5px solid #b3daff;
 `;
 
-const Indicator = styled.div`
-  position: absolute;
-  width: 250px;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  text-align: center;
-`;
-
-const Total = styled.h3`
-  font-size: 28px;
-  color: lime;
+const Upgrades = styled.div`
+  border-bottom: 6px solid white;
 `;
 
 const HomeLink = styled(Link)`
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  color: #666;
+  margin: 10px 0;
 `;
 
 export default Game;
