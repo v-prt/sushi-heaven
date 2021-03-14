@@ -6,15 +6,15 @@ import cookieSrc from "../real-cookie.png";
 import Item from "./Item";
 import useInterval from "../hooks/use-interval.hook";
 
-const items = [
+const upgrades = [
   { id: "cursor", name: "Cursor", cost: 10, value: 1 },
-  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
   {
     id: "megaCursor",
     name: "Mega Cursor",
-    cost: 500,
+    cost: 50,
     value: 5,
   },
+  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
   { id: "farm", name: "Farm", cost: 1000, value: 80 },
 ];
 
@@ -49,16 +49,16 @@ const useKeyUp = (code, callback) => {
 const Game = () => {
   const [numCookies, setNumCookies] = useState(100);
   const [cookiesPerClick, setCookiesPerClick] = useState(1);
-  const [numItemsOwned, setNumItemsOwned] = useState({
+  const [numUpgrades, setNumUpgrades] = useState({
     cursor: 0,
-    grandma: 0,
     megaCursor: 0,
+    grandma: 0,
     farm: 0,
   });
   const [itemCost, setItemCost] = useState({
     cursor: 10,
+    megaCursor: 50,
     grandma: 100,
-    megaCursor: 500,
     farm: 1000,
   });
 
@@ -73,10 +73,10 @@ const Game = () => {
     } else if (item.id === "megaCursor") {
       setNumCookies(numCookies - itemCost[item.id]);
       setCookiesPerClick(cookiesPerClick + item.value);
-      setNumItemsOwned({
+      setNumUpgrades({
         // use spread operator to prevent overwriting other state values
-        ...numItemsOwned,
-        [item.id]: numItemsOwned[item.id] + 1,
+        ...numUpgrades,
+        [item.id]: numUpgrades[item.id] + 1,
       });
       setItemCost({
         ...itemCost,
@@ -84,9 +84,9 @@ const Game = () => {
       });
     } else {
       setNumCookies(numCookies - itemCost[item.id]);
-      setNumItemsOwned({
-        ...numItemsOwned,
-        [item.id]: numItemsOwned[item.id] + 1,
+      setNumUpgrades({
+        ...numUpgrades,
+        [item.id]: numUpgrades[item.id] + 1,
       });
       setItemCost({
         ...itemCost,
@@ -95,23 +95,36 @@ const Game = () => {
     }
   };
 
-  const calcCookiesPerSec = (numItemsOwned) => {
+  const calcCookiesPerSec = (numUpgrades) => {
     let num = 0;
     num =
-      1 * numItemsOwned["cursor"] +
-      10 * numItemsOwned["grandma"] +
-      80 * numItemsOwned["farm"];
+      1 * numUpgrades["cursor"] +
+      10 * numUpgrades["grandma"] +
+      80 * numUpgrades["farm"];
     return num;
   };
 
-  const cookiesPerSec = calcCookiesPerSec(numItemsOwned);
+  const cookiesPerSec = calcCookiesPerSec(numUpgrades);
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
     setNumCookies(numCookies + cookiesPerSec);
   }, 1000);
 
+  // shorten display number of cookies when over threshold
+  let displayNum = numCookies;
+  const compactDisplayNum = (num) => {
+    if (num >= 1000000000) {
+      displayNum = (numCookies / 1000000000).toFixed(2) + "b"; // billions
+    } else if (num >= 1000000) {
+      displayNum = (numCookies / 1000000).toFixed(2) + "m"; // millions
+    } else if (num >= 1000) {
+      displayNum = (numCookies / 1000).toFixed(2) + "k"; // thousands
+    }
+  };
+  compactDisplayNum(numCookies);
+
   // calling the custom hooks
-  useDocumentTitle(`${numCookies} cookies - Cookie Heaven`, "Cookie Heaven");
+  useDocumentTitle(`${displayNum} cookies - Cookie Heaven`, "Cookie Heaven");
   useKeyUp("Space", makeCookies);
 
   return (
@@ -124,7 +137,7 @@ const Game = () => {
 
       <Factory>
         <Indicator>
-          <Total>Cookies: {numCookies}</Total>
+          <Total>Cookies: {displayNum}</Total>
           <strong>{cookiesPerSec}</strong> cookies per second
           <div>
             <strong>{cookiesPerClick}</strong> cookies per click
@@ -132,9 +145,9 @@ const Game = () => {
         </Indicator>
         <SectionTitle>Upgrades</SectionTitle>
         <Upgrades>
-          {items.map((item) => {
+          {upgrades.map((item) => {
             let firstItem;
-            if (items.indexOf(item) === 0) {
+            if (upgrades.indexOf(item) === 0) {
               firstItem = true;
             }
             return (
@@ -142,7 +155,7 @@ const Game = () => {
                 item={item}
                 firstItem={firstItem}
                 itemCost={itemCost[item.id]}
-                numOwned={numItemsOwned[item.id]}
+                numOwned={numUpgrades[item.id]}
                 buyItem={() => buyItem(item)}
               />
             );
