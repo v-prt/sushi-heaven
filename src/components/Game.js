@@ -55,7 +55,7 @@ const Game = () => {
     grandma: 0,
     farm: 0,
   });
-  const [itemCost, setItemCost] = useState({
+  const [upgradeCost, setUpgradeCost] = useState({
     cursor: 10,
     megaCursor: 50,
     grandma: 100,
@@ -76,31 +76,31 @@ const Game = () => {
     }, 100);
   };
 
-  const buyItem = (item) => {
-    if (numCookies < itemCost[item.id]) {
-      alert("You do not have enough cookies to make this purchase!");
-      return;
+  const buyUpgrade = (item) => {
+    if (numCookies < upgradeCost[item.id]) {
+      // alert("You do not have enough cookies to make this purchase!");
+      // return;
     } else if (item.id === "megaCursor") {
-      setNumCookies(numCookies - itemCost[item.id]);
+      setNumCookies(numCookies - upgradeCost[item.id]);
       setCookiesPerClick(cookiesPerClick + item.value);
       setNumUpgrades({
         // use spread operator to prevent overwriting other state values
         ...numUpgrades,
         [item.id]: numUpgrades[item.id] + 1,
       });
-      setItemCost({
-        ...itemCost,
-        [item.id]: Math.floor(itemCost[item.id] * 1.25),
+      setUpgradeCost({
+        ...upgradeCost,
+        [item.id]: Math.floor(upgradeCost[item.id] * 1.25),
       });
     } else {
-      setNumCookies(numCookies - itemCost[item.id]);
+      setNumCookies(numCookies - upgradeCost[item.id]);
       setNumUpgrades({
         ...numUpgrades,
         [item.id]: numUpgrades[item.id] + 1,
       });
-      setItemCost({
-        ...itemCost,
-        [item.id]: Math.floor(itemCost[item.id] * 1.25),
+      setUpgradeCost({
+        ...upgradeCost,
+        [item.id]: Math.floor(upgradeCost[item.id] * 1.25),
       });
     }
   };
@@ -163,13 +163,18 @@ const Game = () => {
             if (upgrades.indexOf(item) === 0) {
               firstItem = true;
             }
+            let available = false;
+            if (numCookies >= upgradeCost[item.id]) {
+              available = true;
+            }
             return (
               <Item
                 item={item}
                 firstItem={firstItem}
-                itemCost={itemCost[item.id]}
+                upgradeCost={upgradeCost[item.id]}
+                available={available}
                 numOwned={numUpgrades[item.id]}
-                buyItem={() => buyItem(item)}
+                buyUpgrade={() => buyUpgrade(item)}
               />
             );
           })}
@@ -180,10 +185,13 @@ const Game = () => {
   );
 };
 
+// FIXME: game moves a bit to side when clicking MegaCursor
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
 `;
+
 const GameArea = styled.div`
   margin: 30px;
 `;

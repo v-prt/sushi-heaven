@@ -1,13 +1,31 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-const Item = ({ item, firstItem, itemCost, numOwned, buyItem }) => {
-  const ref = useRef(null);
+const Item = ({
+  item,
+  firstItem,
+  upgradeCost,
+  available,
+  numOwned,
+  buyUpgrade,
+}) => {
+  const upgrade = useRef(null);
+
+  // FOCUSES ON FIRST ITEM ON LOAD
   useEffect(() => {
     if (firstItem) {
-      ref.current.focus();
+      upgrade.current.focus();
     }
   }, [firstItem]);
+
+  // DISABLES & ENABLES UPGRADES
+  useEffect(() => {
+    if (available === false) {
+      upgrade.current.disabled = true;
+    } else if (available === true) {
+      upgrade.current.disabled = false;
+    }
+  }, [available]);
 
   let itemUse = () => {
     if (item.id === "megaCursor") {
@@ -18,10 +36,10 @@ const Item = ({ item, firstItem, itemCost, numOwned, buyItem }) => {
   };
 
   return (
-    <Button id={item.id} onMouseDown={buyItem} ref={ref}>
+    <Button id={item.id} onMouseDown={buyUpgrade} ref={upgrade}>
       <ItemDetails>
         <Name>{item.name}</Name>
-        <Cost>Cost: {itemCost} cookies.</Cost>
+        <Cost>Cost: {upgradeCost} cookies.</Cost>
         <Use>{itemUse()}</Use>
       </ItemDetails>
       <NumOwned>{numOwned}</NumOwned>
@@ -39,13 +57,18 @@ const Button = styled.button`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: 0.3s ease-in-out;
+  transition: 0.2s ease-in-out;
   &:hover {
     cursor: pointer;
     color: #ff4da6;
   }
   &:last-child {
     border-bottom: none;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+    color: white;
   }
 `;
 
