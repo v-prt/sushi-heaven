@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -25,7 +25,7 @@ const useDocumentTitle = (title, fallbackTitle) => {
     return () => {
       document.title = fallbackTitle;
     };
-    // warning: "React Hook useEffect has a missing dependency: 'fallbackTitle'. Either include it or remove the dependency array"
+    // FIXME: warning - "React Hook useEffect has a missing dependency: 'fallbackTitle'. Either include it or remove the dependency array"
     // not sure how to fix but seems to work anyway
   }, [title]);
 };
@@ -62,8 +62,18 @@ const Game = () => {
     farm: 1000,
   });
 
+  const points = useRef(null);
   const makeCookies = () => {
     setNumCookies(numCookies + cookiesPerClick);
+    // points (cookiesPerClick) briefly appear on cookie
+    let randomBottom = Math.floor(Math.random() * 50) + 120;
+    let randomLeft = Math.floor(Math.random() * 50) + 150;
+    points.current.style.bottom = `${randomBottom}px`;
+    points.current.style.left = `${randomLeft}px`;
+    points.current.style.visibility = "visible";
+    setTimeout(() => {
+      points.current.style.visibility = "hidden";
+    }, 100);
   };
 
   const buyItem = (item) => {
@@ -114,11 +124,11 @@ const Game = () => {
   let displayNum = numCookies;
   const compactDisplayNum = (num) => {
     if (num >= 1000000000) {
-      displayNum = (numCookies / 1000000000).toFixed(2) + "b"; // billions
+      displayNum = (numCookies / 1000000000).toFixed(1) + "b"; // billions
     } else if (num >= 1000000) {
-      displayNum = (numCookies / 1000000).toFixed(2) + "m"; // millions
+      displayNum = (numCookies / 1000000).toFixed(1) + "m"; // millions
     } else if (num >= 1000) {
-      displayNum = (numCookies / 1000).toFixed(2) + "k"; // thousands
+      displayNum = (numCookies / 1000).toFixed(1) + "k"; // thousands
     }
   };
   compactDisplayNum(numCookies);
@@ -130,6 +140,7 @@ const Game = () => {
   return (
     <Wrapper>
       <GameArea>
+        <Points ref={points}>+{cookiesPerClick}</Points>
         <CookieBtn onMouseDown={makeCookies}>
           <Cookie src={cookieSrc} />
         </CookieBtn>
@@ -172,15 +183,23 @@ const Game = () => {
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
 `;
-const GameArea = styled.div``;
+const GameArea = styled.div`
+  margin: 30px;
+`;
+
+const Points = styled.span`
+  visibility: hidden;
+  position: relative;
+  z-index: 10;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px #ff4da6;
+`;
 
 const CookieBtn = styled.button`
   border: none;
   background: transparent;
-  margin-right: 50px;
   cursor: pointer;
   // removes the ugly focus ring (not accessibility-friendly)
   &:focus {
@@ -190,6 +209,10 @@ const CookieBtn = styled.button`
 
 const Cookie = styled.img`
   width: 300px;
+  transition: 0.2s ease-in-out;
+  &:active {
+    transform: scale(0.9);
+  }
 `;
 
 const Factory = styled.div`
@@ -197,6 +220,7 @@ const Factory = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 30px;
   border: 6px solid white;
   border-radius: 10px;
   width: 400px;
@@ -213,7 +237,7 @@ const Indicator = styled.div`
 `;
 
 const Total = styled.h3`
-  font-size: 2.5rem;
+  font-size: 2.3rem;
   font-family: "Merienda", cursive;
   font-weight: bold;
   text-shadow: 0 0 10px white;
