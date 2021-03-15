@@ -12,7 +12,7 @@ const upgrades = [
     id: "megaCursor",
     name: "Mega Cursor",
     cost: 50,
-    value: 5,
+    value: 3,
   },
   { id: "grandma", name: "Grandma", cost: 100, value: 10 },
   { id: "farm", name: "Farm", cost: 1000, value: 80 },
@@ -66,9 +66,9 @@ const Game = () => {
   const makeCookies = () => {
     setNumCookies(numCookies + cookiesPerClick);
     // points (cookiesPerClick) briefly appear on cookie
-    let randomBottom = Math.floor(Math.random() * 50) + 120;
-    let randomLeft = Math.floor(Math.random() * 50) + 150;
-    points.current.style.bottom = `${randomBottom}px`;
+    let randomTop = Math.floor(Math.random() * 60) + 130;
+    let randomLeft = Math.floor(Math.random() * 60) + 100;
+    points.current.style.top = `${randomTop}px`;
     points.current.style.left = `${randomLeft}px`;
     points.current.style.visibility = "visible";
     setTimeout(() => {
@@ -185,7 +185,6 @@ const Game = () => {
   );
 };
 
-// FIXME: game moves a bit to side when clicking MegaCursor
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -196,7 +195,7 @@ const GameArea = styled.div`
   margin: 30px;
 `;
 
-const Points = styled.span`
+const Points = styled.p`
   visibility: hidden;
   position: relative;
   z-index: 10;
