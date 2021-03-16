@@ -10,6 +10,7 @@ import usePersistedState from "../hooks/use-persisted-state.hook";
 import cookieSrc from "../real-cookie.png";
 import Item from "./Item";
 import upgrades from "../data";
+import Button from "./Button";
 
 const Game = () => {
   const [cookiesPerClick, setCookiesPerClick] = useState(1);
@@ -86,6 +87,7 @@ const Game = () => {
   };
 
   const cookiesPerSec = calcCookiesPerSec(upgradesOwned);
+
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
     setNumCookies(numCookies + cookiesPerSec);
@@ -116,7 +118,7 @@ const Game = () => {
   };
   compactDisplayNum(numCookies);
 
-  const handleRestart = () => {
+  const handleReset = () => {
     localStorage.clear();
     setCookiesPerClick(1);
     setNumCookies(1000);
@@ -146,8 +148,11 @@ const Game = () => {
           <Cookie src={cookieSrc} />
         </CookieBtn>
       </GameArea>
-
       <Factory>
+        <Options>
+          <HomeLink to="/">Home</HomeLink>
+          <Button onClick={handleReset}>Reset</Button>
+        </Options>
         <Indicator>
           <Total>COOKIES: {displayNum}</Total>
           <p>
@@ -180,8 +185,6 @@ const Game = () => {
             );
           })}
         </Upgrades>
-        <HomeLink to="/">Home</HomeLink>
-        <RestartBtn onClick={handleRestart}>Restart</RestartBtn>
       </Factory>
     </Wrapper>
   );
@@ -237,6 +240,12 @@ const Factory = styled.div`
   background: linear-gradient(#b3daff, #ffb3d9);
 `;
 
+const Options = styled.div`
+  display: flex;
+  width: 100%;
+  border-bottom: 6px solid white;
+`;
+
 const Indicator = styled.div`
   text-align: center;
   margin: 30px;
@@ -256,7 +265,7 @@ const SectionTitle = styled.h3`
   font-family: "Merienda", cursive;
   text-align: center;
   font-size: 1.8rem;
-  background: #80c1ff;
+  background: #66b5ff;
   width: 100%;
   padding: 10px 0;
   border-top: 6px solid white;
@@ -264,28 +273,9 @@ const SectionTitle = styled.h3`
 `;
 
 const Upgrades = styled.div`
-  border-bottom: 6px solid white;
   width: 100%;
 `;
 
-const HomeLink = styled(Link)`
-  margin: 10px 0 5px 0;
-`;
-
-const RestartBtn = styled.button`
-  border: none;
-  background: transparent;
-  margin: 5px 0 10px 0;
-  font-family: "Raleway", sans-serif;
-  font-size: 1.2rem;
-  color: white;
-  text-decoration: none;
-  transition: 0.3s ease-in-out;
-  &:hover {
-    cursor: pointer;
-    color: #ff4da6;
-    font-weight: bold;
-  }
-`;
+const HomeLink = styled(Link)``;
 
 export default Game;

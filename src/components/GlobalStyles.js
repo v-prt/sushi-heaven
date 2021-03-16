@@ -69,15 +69,21 @@ export default createGlobalStyle`
   }
 
   a {
+    background: transparent;
+    border: none;
     font-family: "Raleway", sans-serif;
     font-size: 1.2rem;
-    color: white;
+    font-weight: bold;
+    color: #66b5ff;
     text-decoration: none;
+    text-align: center;
+    padding: 10px;
+    width: 50%;
     transition: 0.3s ease-in-out;
     &:hover {
       cursor: pointer;
-      color: #ff4da6;
-      font-weight: bold;
+      background: #66b5ff;
+      color: white;
     }
   }
 `;

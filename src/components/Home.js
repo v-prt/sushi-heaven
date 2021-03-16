@@ -6,23 +6,32 @@ const Home = () => {
   return (
     <Wrapper>
       <Title>Cookie Heaven</Title>
-      <Link to="/game">~ Go to Game ~</Link>
+      <GameLink to="/game">~ Go to Game ~</GameLink>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
   height: 100vh;
-  display: grid;
-  place-content: center;
-  text-align: center;
 `;
 
 const Title = styled.h1`
   font-size: 5rem;
-  margin-bottom: 32px;
   font-family: "Emilys Candy";
   text-shadow: 0 0 10px white;
+`;
+
+const GameLink = styled(Link)`
+  width: auto;
+  &:hover {
+    background: transparent;
+    color: #ff4da6;
+  }
 `;
 
 export default Home;
