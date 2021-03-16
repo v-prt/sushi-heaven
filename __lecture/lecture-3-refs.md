@@ -102,15 +102,25 @@ Use `useRef`
 
 ```js
 const ConfirmButton = () => {
+  // 1. create ref
+  const ref = useRef(null);
+  // 2. make sure you target ref.current, since ref is an object
   React.useEffect(() => {
-    const btn = document.getElementById("confirm-button");
-
-    if (btn) {
-      btn.focus();
+    if (ref) {
+      ref.current.focus();
     }
   }, []);
 
-  return <button id="confirm-button">Confirm</button>;
+  return (
+    // 3. pass ref attribute to element
+    <button id="confirm-button" ref={ref}>
+      Confirm
+    </button>
+  );
+};
+
+const App = () => {
+  return <ConfirmButton />;
 };
 ```
 
@@ -119,12 +129,14 @@ const ConfirmButton = () => {
 <Timer initialTime={2} />
 
 ```js
-const PasswordInput = ({ focusOnMount }) => {
-  React.useEffect(() => {
-    const input = document.querySelector("[data-name=pswrd]");
+const PasswordInput = () => {
+  // 1. create ref
+  const input = useRef(null);
 
-    if (focusOnMount && input) {
-      input.focus();
+  React.useEffect(() => {
+    // 2. do something with ref
+    if (input) {
+      input.current.focus();
     }
   }, []);
 
@@ -132,9 +144,14 @@ const PasswordInput = ({ focusOnMount }) => {
     <label>
       Password:
       <br />
-      <input type="password" data-name="pswrd" />
+      {/* 3. assign ref attribute */}
+      <input ref={input} type="password" data-name="pswrd" />
     </label>
   );
+};
+
+const App = () => {
+  return <PasswordInput />;
 };
 ```
 

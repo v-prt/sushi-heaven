@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <Wrapper>
       <Title>Cookie Heaven</Title>
-      <Link to="/game">~ Start Game ~</Link>
+      <Link to="/game">~ Go to Game ~</Link>
     </Wrapper>
   );
 };

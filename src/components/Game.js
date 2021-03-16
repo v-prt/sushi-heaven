@@ -2,70 +2,41 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
+import useInterval from "../hooks/use-interval.hook";
+import useDocumentTitle from "../hooks/use-document-title.hook";
+import useKeyUp from "../hooks/use-key-up.hook";
+import usePersistedState from "../hooks/use-persisted-state.hook";
+
 import cookieSrc from "../real-cookie.png";
 import Item from "./Item";
-import useInterval from "../hooks/use-interval.hook";
-
-const upgrades = [
-  { id: "cursor", name: "Cursor", cost: 10, value: 1 },
-  {
-    id: "megaCursor",
-    name: "Mega Cursor",
-    cost: 50,
-    value: 3,
-  },
-  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
-  { id: "farm", name: "Farm", cost: 1000, value: 80 },
-];
-
-// REUSABLE CUSTOM HOOK
-const useDocumentTitle = (title, fallbackTitle) => {
-  useEffect(() => {
-    document.title = title;
-    return () => {
-      document.title = fallbackTitle;
-    };
-    // FIXME: warning - "React Hook useEffect has a missing dependency: 'fallbackTitle'. Either include it or remove the dependency array"
-    // not sure how to fix but seems to work anyway
-  }, [title]);
-};
-
-// REUSABLE CUSTOM HOOK
-// switched to keyup to prevent holding down spacebar to make cookies
-const useKeyUp = (code, callback) => {
-  useEffect(() => {
-    const handleKeyUp = (ev) => {
-      if (ev.code === code) {
-        callback();
-      }
-    };
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  });
-};
+import upgrades from "../data";
 
 const Game = () => {
-  const [numCookies, setNumCookies] = useState(100);
   const [cookiesPerClick, setCookiesPerClick] = useState(1);
-  const [numUpgrades, setNumUpgrades] = useState({
-    cursor: 0,
-    megaCursor: 0,
-    grandma: 0,
-    farm: 0,
-  });
-  const [upgradeCost, setUpgradeCost] = useState({
-    cursor: 10,
-    megaCursor: 50,
-    grandma: 100,
-    farm: 1000,
-  });
+  const [numCookies, setNumCookies] = usePersistedState(1000, "num-cookies");
+  const [upgradesOwned, setUpgradesOwned] = usePersistedState(
+    {
+      cursor: 0,
+      megaCursor: 0,
+      grandma: 0,
+      farm: 0,
+    },
+    "upgrades-owned"
+  );
+  const [upgradeCost, setUpgradeCost] = usePersistedState(
+    {
+      cursor: 10,
+      megaCursor: 50,
+      grandma: 100,
+      farm: 1000,
+    },
+    "upgrade-cost"
+  );
 
+  // points (cookiesPerClick) briefly appear on cookie
   const points = useRef(null);
   const makeCookies = () => {
     setNumCookies(numCookies + cookiesPerClick);
-    // points (cookiesPerClick) briefly appear on cookie
     let randomTop = Math.floor(Math.random() * 60) + 130;
     let randomLeft = Math.floor(Math.random() * 60) + 100;
     points.current.style.top = `${randomTop}px`;
@@ -83,10 +54,10 @@ const Game = () => {
     } else if (item.id === "megaCursor") {
       setNumCookies(numCookies - upgradeCost[item.id]);
       setCookiesPerClick(cookiesPerClick + item.value);
-      setNumUpgrades({
+      setUpgradesOwned({
         // use spread operator to prevent overwriting other state values
-        ...numUpgrades,
-        [item.id]: numUpgrades[item.id] + 1,
+        ...upgradesOwned,
+        [item.id]: upgradesOwned[item.id] + 1,
       });
       setUpgradeCost({
         ...upgradeCost,
@@ -94,9 +65,9 @@ const Game = () => {
       });
     } else {
       setNumCookies(numCookies - upgradeCost[item.id]);
-      setNumUpgrades({
-        ...numUpgrades,
-        [item.id]: numUpgrades[item.id] + 1,
+      setUpgradesOwned({
+        ...upgradesOwned,
+        [item.id]: upgradesOwned[item.id] + 1,
       });
       setUpgradeCost({
         ...upgradeCost,
@@ -105,20 +76,32 @@ const Game = () => {
     }
   };
 
-  const calcCookiesPerSec = (numUpgrades) => {
+  const calcCookiesPerSec = (upgradesOwned) => {
     let num = 0;
     num =
-      1 * numUpgrades["cursor"] +
-      10 * numUpgrades["grandma"] +
-      80 * numUpgrades["farm"];
+      1 * upgradesOwned["cursor"] +
+      10 * upgradesOwned["grandma"] +
+      80 * upgradesOwned["farm"];
     return num;
   };
 
-  const cookiesPerSec = calcCookiesPerSec(numUpgrades);
+  const cookiesPerSec = calcCookiesPerSec(upgradesOwned);
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
     setNumCookies(numCookies + cookiesPerSec);
+    // stores the number of milliseconds since midnight 1/1/1970
+    localStorage.setItem("timer", new Date().getTime());
   }, 1000);
+
+  useEffect(() => {
+    let timer = localStorage.getItem("timer");
+    let timeElapsed = new Date().getTime() - timer;
+    timeElapsed = Math.floor(timeElapsed / 1000);
+    const cookiesEarned = cookiesPerSec * timeElapsed;
+    setNumCookies(numCookies + cookiesEarned);
+    // FIXME: "warning - React Hook useEffect has missing dependencies: 'cookiesPerSec', 'numCookies', and 'setNumCookies'. Either include them or remove the dependency array"
+    // not sure how to fix, works anyway (if I remove the [] it breaks)
+  }, []);
 
   // shorten display number of cookies when over threshold
   let displayNum = numCookies;
@@ -132,6 +115,24 @@ const Game = () => {
     }
   };
   compactDisplayNum(numCookies);
+
+  const handleRestart = () => {
+    localStorage.clear();
+    setCookiesPerClick(1);
+    setNumCookies(1000);
+    setUpgradeCost({
+      cursor: 10,
+      megaCursor: 50,
+      grandma: 100,
+      farm: 1000,
+    });
+    setUpgradesOwned({
+      cursor: 0,
+      megaCursor: 0,
+      grandma: 0,
+      farm: 0,
+    });
+  };
 
   // calling the custom hooks
   useDocumentTitle(`${displayNum} cookies - Cookie Heaven`, "Cookie Heaven");
@@ -173,13 +174,14 @@ const Game = () => {
                 firstItem={firstItem}
                 upgradeCost={upgradeCost[item.id]}
                 available={available}
-                numOwned={numUpgrades[item.id]}
+                upgradesOwned={upgradesOwned[item.id]}
                 buyUpgrade={() => buyUpgrade(item)}
               />
             );
           })}
         </Upgrades>
-        <HomeLink to="/">Quit (Return Home)</HomeLink>
+        <HomeLink to="/">Home</HomeLink>
+        <RestartBtn onClick={handleRestart}>Restart</RestartBtn>
       </Factory>
     </Wrapper>
   );
@@ -267,7 +269,23 @@ const Upgrades = styled.div`
 `;
 
 const HomeLink = styled(Link)`
-  margin: 10px 0;
+  margin: 10px 0 5px 0;
+`;
+
+const RestartBtn = styled.button`
+  border: none;
+  background: transparent;
+  margin: 5px 0 10px 0;
+  font-family: "Raleway", sans-serif;
+  font-size: 1.2rem;
+  color: white;
+  text-decoration: none;
+  transition: 0.3s ease-in-out;
+  &:hover {
+    cursor: pointer;
+    color: #ff4da6;
+    font-weight: bold;
+  }
 `;
 
 export default Game;

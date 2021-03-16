@@ -155,8 +155,9 @@ Update the following snippets to make use of `useEffect`
 ```js
 const App = () => {
   const [count, setCount] = React.useState(0);
-
-  document.title = `You have clicked ${count} times`;
+  useEffect(() => {
+    document.title = `You have clicked ${count} times`;
+  }, [count]);
 
   return <button onClick={() => setCount(count + 1)}>Increment</button>;
 };
@@ -167,9 +168,13 @@ const App = () => {
 ```js
 const App = ({ color }) => {
   const [value, setValue] = React.useState(false);
-
-  window.localStorage.setItem("value", value);
-  window.localStorage.setItem("color", color);
+  // Separate useEffects because you only want to update value if value updates, not when color updates (and vice-versa)
+  useEffect(() => {
+    window.localStorage.setItem("value", value);
+  }, [value]);
+  useEffect(() => {
+    window.localStorage.setItem("color", color);
+  }, [color]);
 
   return (
     <div>
@@ -184,11 +189,14 @@ const App = ({ color }) => {
 
 ```js
 const Modal = ({ handleClose }) => {
-  window.addEventListener("keydown", (ev) => {
-    if (ev.code === "Escape") {
-      handleClose();
-    }
-  });
+  // In this example, we are not handling removeEventListener yet. This use effect will only run once after render and whenever handleClose is called (which is 'assumed' to be defined in the parent component)
+  React.useEffect(() => {
+    window.addEventListener("keydown", (ev) => {
+      if (ev.code === "Escape") {
+        handleClose();
+      }
+    });
+  }, [handleClose]);
 
   return <div>Modal stuff</div>;
 };
@@ -291,12 +299,18 @@ Make sure to do the appropriate cleanup work
 ---
 
 ```js
-// seTimeout is similar to setInterval...
+// setTimeout is similar to setInterval...
+//setTimeout: https://www.w3schools.com/jsref/met_win_settimeout.asp
 const App = () => {
-  React.useEffect(() => {
-    window.setTimeout(() => {
+  useEffect(() => {
+    // effect
+    const timerId = window.setTimeout(() => {
       console.log("1 second after update!");
     });
+    // clean up
+    return () => {
+      window.clearTimeout(timerId);
+    };
   }, []);
 
   return null;
@@ -307,10 +321,19 @@ const App = () => {
 
 ```js
 const App = () => {
-  React.useEffect(() => {
-    window.addEventListener("keydown", (ev) => {
-      console.log("You pressed: " + ev.code);
-    });
+  // need to define external function because
+  // removeEventListener cannot accept anonymous function
+  const handleKeydown = (ev) => {
+    console.log("You pressed: " + ev.code);
+  };
+
+  useEffect(() => {
+    //effect
+    window.addEventListener("keydown", handleKeydown);
+    //cleanup
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
   }, []);
 
   return null;
@@ -352,7 +375,8 @@ Tracking mouse position
 <div class="col">
 
 ```js
-const App = ({ path }) => {
+//1. Define hook with 'use' keyword
+const useMousePosition = () => {
   const [mousePosition, setMousePosition] = React.useState({
     x: null,
     y: null,
@@ -370,6 +394,13 @@ const App = ({ path }) => {
     };
   }, []);
 
+  //2. return result
+  return mousePosition;
+};
+
+const App = () => {
+  //3. use hook
+  const mousePosition = useMousePosition();
   return (
     <div>
       The mouse is at {mousePosition.x}, {mousePosition.y}.
@@ -399,7 +430,8 @@ Extract a custom hook
 <Timer initialTime={2} />
 
 ```js
-const App = ({ path }) => {
+//path is an imaginary endpoint
+const useData = (path) => {
   const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
@@ -409,7 +441,11 @@ const App = ({ path }) => {
         setData(json);
       });
   }, [path]);
+  return data;
+};
 
+const App = ({ path }) => {
+  const data = useData(path);
   return <span>Data: {JSON.stringify(data)}</span>;
 };
 ```
@@ -417,7 +453,8 @@ const App = ({ path }) => {
 ---
 
 ```js live=true
-const Time = ({ throttleDuration }) => {
+// 1. define hook and pass throttleDuration
+const useTime = (throttleDuration) => {
   const [time, setTime] = React.useState(new Date());
 
   React.useEffect(() => {
@@ -429,7 +466,13 @@ const Time = ({ throttleDuration }) => {
       window.clearInterval(intervalId);
     };
   }, [throttleDuration]);
+  // 2. return result
+  return time;
+};
 
+const Time = ({ throttleDuration }) => {
+  // 3. use hook and pass in throttleDuration from App
+  const time = useTime(throttleDuration);
   return (
     <span>
       It is currently
@@ -439,5 +482,7 @@ const Time = ({ throttleDuration }) => {
   );
 };
 
-render(<Time throttleDuration={1000} />);
+const App = () => {
+  return <Time throttleDuration={1000} />;
+};
 ```

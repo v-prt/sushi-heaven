@@ -6,7 +6,7 @@ const Item = ({
   firstItem,
   upgradeCost,
   available,
-  numOwned,
+  upgradesOwned,
   buyUpgrade,
 }) => {
   const upgrade = useRef(null);
@@ -42,7 +42,7 @@ const Item = ({
         <Cost>Cost: {upgradeCost} cookies.</Cost>
         <Use>{itemUse()}</Use>
       </ItemDetails>
-      <NumOwned>{numOwned}</NumOwned>
+      <NumOwned>{upgradesOwned}</NumOwned>
     </Button>
   );
 };
