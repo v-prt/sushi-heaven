@@ -36,21 +36,20 @@ const Game = () => {
   );
 
   // points (sushiPerClick) briefly appear on sushi in random spots
-  const points = useRef(null);
+  const pointsRef = useRef(null);
+  const sushiRef = useRef(null);
   const makeSushi = () => {
-    if (sushiPerClick === 0) {
-      return;
-    } else {
-      setNumSushi(numSushi + sushiPerClick);
-      let randomTop = Math.floor(Math.random() * 60) + 130;
-      let randomLeft = Math.floor(Math.random() * 60) + 100;
-      points.current.style.top = `${randomTop}px`;
-      points.current.style.left = `${randomLeft}px`;
-      points.current.style.visibility = "visible";
-      setTimeout(() => {
-        points.current.style.visibility = "hidden";
-      }, 100);
-    }
+    setNumSushi(numSushi + sushiPerClick);
+    let randomTop = Math.floor(Math.random() * 50) + 40;
+    let randomLeft = Math.floor(Math.random() * 50) + 100;
+    pointsRef.current.style.top = `${randomTop}px`;
+    pointsRef.current.style.left = `${randomLeft}px`;
+    pointsRef.current.style.opacity = "1";
+    sushiRef.current.style.transform = "scale(0.9)";
+    setTimeout(() => {
+      pointsRef.current.style.opacity = "0";
+      sushiRef.current.style.transform = "scale(1)";
+    }, 100);
   };
 
   const buyUpgrade = (item) => {
@@ -126,23 +125,29 @@ const Game = () => {
   compactDisplayNum(numSushi);
 
   const handleReset = () => {
-    localStorage.clear();
-    setSushiPerClick(1);
-    setNumSushi(0);
-    setUpgradeCost({
-      megaCursor: 10,
-      autoCursor: 100,
-      jiro: 1500,
-      farm: 20000,
-      factory: 500000,
-    });
-    setUpgradesOwned({
-      megaCursor: 0,
-      autoCursor: 0,
-      jiro: 0,
-      farm: 0,
-      factory: 0,
-    });
+    if (
+      window.confirm(
+        "Are you sure you want to reset the game? You will lose all your progress!"
+      )
+    ) {
+      localStorage.clear();
+      setSushiPerClick(1);
+      setNumSushi(0);
+      setUpgradeCost({
+        megaCursor: 10,
+        autoCursor: 100,
+        jiro: 1500,
+        farm: 20000,
+        factory: 500000,
+      });
+      setUpgradesOwned({
+        megaCursor: 0,
+        autoCursor: 0,
+        jiro: 0,
+        farm: 0,
+        factory: 0,
+      });
+    }
   };
 
   // calling the custom hooks
@@ -151,12 +156,11 @@ const Game = () => {
 
   return (
     <Wrapper>
-      <GameArea>
-        <Points ref={points}>+{sushiPerClick}</Points>
-        <SushiBtn onMouseDown={makeSushi}>
-          <Sushi src={sushi} />
-        </SushiBtn>
-      </GameArea>
+      {/* TODO: instructions (floating animation, arrow pointing at sushi, goes away after first click) */}
+      <GameButton onClick={makeSushi}>
+        <Points ref={pointsRef}>+{sushiPerClick}</Points>
+        <Sushi src={sushi} ref={sushiRef} />
+      </GameButton>
       <Factory>
         <Options>
           <HomeLink to="/">Home</HomeLink>
@@ -174,10 +178,6 @@ const Game = () => {
         <SectionTitle>Upgrades</SectionTitle>
         <Upgrades>
           {upgrades.map((item, i) => {
-            let firstItem;
-            if (upgrades.indexOf(item) === 0) {
-              firstItem = true;
-            }
             let available = false;
             if (numSushi >= upgradeCost[item.id]) {
               available = true;
@@ -186,10 +186,9 @@ const Game = () => {
               <Item
                 key={i}
                 item={item}
-                firstItem={firstItem}
-                upgradeCost={upgradeCost[item.id].toLocaleString()}
+                cost={upgradeCost[item.id].toLocaleString()}
                 available={available}
-                upgradesOwned={upgradesOwned[item.id]}
+                numOwned={upgradesOwned[item.id]}
                 buyUpgrade={() => buyUpgrade(item)}
               />
             );
@@ -206,35 +205,38 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const GameArea = styled.div`
-  margin: 30px;
-`;
-
-const Points = styled.p`
-  color: #fff;
-  visibility: hidden;
-  position: relative;
-  z-index: 10;
-  font-size: 2rem;
-  font-weight: bold;
-  text-shadow: 0 0 10px #ff4da6;
-`;
-
-const SushiBtn = styled.button`
+const GameButton = styled.button`
   border: none;
   background: transparent;
+  margin: 30px;
+  position: relative;
   cursor: pointer;
   &:focus {
     outline: none;
   }
 `;
 
+const Points = styled.p`
+  color: #fff;
+  opacity: 0;
+  position: absolute;
+  width: fit-content;
+  z-index: 10;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px #ff4da6;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+`;
+
 const Sushi = styled.img`
   width: 300px;
   transition: 0.2s ease-in-out;
-  &:active {
-    transform: scale(0.9);
-  }
 `;
 
 const Factory = styled.div`

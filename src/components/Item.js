@@ -1,17 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components/macro";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 
-const Item = ({
-  item,
-  firstItem,
-  upgradeCost,
-  available,
-  upgradesOwned,
-  buyUpgrade,
-}) => {
+const Item = ({ item, cost, available, numOwned, buyUpgrade }) => {
   const upgrade = useRef(null);
-  console.log(item, available);
 
   let itemUse = () => {
     if (item.id === "megaCursor") {
@@ -31,14 +23,14 @@ const Item = ({
           </BuyBtn>
           <div className="info">
             <Cost className={!available && "not-available"}>
-              <RiMoneyDollarCircleLine /> {upgradeCost} sushi
+              <RiMoneyDollarCircleLine /> {cost} sushi
             </Cost>
             <Use>{itemUse()}</Use>
           </div>
         </div>
       </ItemDetails>
-      <NumOwned className={upgradesOwned === 0 && "none"}>
-        {upgradesOwned}
+      <NumOwned className={numOwned === 0 && "none"}>
+        {numOwned}
         <span>owned</span>
       </NumOwned>
     </Wrapper>
