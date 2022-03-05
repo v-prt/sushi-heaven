@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components/macro";
 import { Link } from "react-router-dom";
 
@@ -13,7 +13,10 @@ import upgrades from "../data";
 import Button from "./Button";
 
 const Game = () => {
-  const [cookiesPerClick, setCookiesPerClick] = useState(1);
+  const [cookiesPerClick, setCookiesPerClick] = usePersistedState(
+    1,
+    "cookies-per-click"
+  );
   const [numCookies, setNumCookies] = usePersistedState(1000, "num-cookies");
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
     {
@@ -21,20 +24,22 @@ const Game = () => {
       megaCursor: 0,
       grandma: 0,
       farm: 0,
+      factory: 0,
     },
     "upgrades-owned"
   );
   const [upgradeCost, setUpgradeCost] = usePersistedState(
     {
       cursor: 10,
-      megaCursor: 50,
-      grandma: 100,
-      farm: 1000,
+      megaCursor: 100,
+      grandma: 1500,
+      farm: 20000,
+      factory: 500000,
     },
     "upgrade-cost"
   );
 
-  // points (cookiesPerClick) briefly appear on cookie
+  // points (cookiesPerClick) briefly appear on cookie in random spots
   const points = useRef(null);
   const makeCookies = () => {
     setNumCookies(numCookies + cookiesPerClick);
@@ -49,10 +54,7 @@ const Game = () => {
   };
 
   const buyUpgrade = (item) => {
-    if (numCookies < upgradeCost[item.id]) {
-      // alert("You do not have enough cookies to make this purchase!");
-      // return;
-    } else if (item.id === "megaCursor") {
+    if (item.id === "megaCursor") {
       setNumCookies(numCookies - upgradeCost[item.id]);
       setCookiesPerClick(cookiesPerClick + item.value);
       setUpgradesOwned({
@@ -82,7 +84,8 @@ const Game = () => {
     num =
       1 * upgradesOwned["cursor"] +
       10 * upgradesOwned["grandma"] +
-      80 * upgradesOwned["farm"];
+      80 * upgradesOwned["farm"] +
+      150 * upgradesOwned["factory"];
     return num;
   };
 
@@ -101,14 +104,14 @@ const Game = () => {
     timeElapsed = Math.floor(timeElapsed / 1000);
     const cookiesEarned = cookiesPerSec * timeElapsed;
     setNumCookies(numCookies + cookiesEarned);
-    // FIXME: "warning - React Hook useEffect has missing dependencies: 'cookiesPerSec', 'numCookies', and 'setNumCookies'. Either include them or remove the dependency array"
-    // not sure how to fix, works anyway (if I remove the [] it breaks)
   }, [cookiesPerSec, numCookies, setNumCookies]);
 
   // shorten display number of cookies when over threshold
   let displayNum = numCookies;
   const compactDisplayNum = (num) => {
-    if (num >= 1000000000) {
+    if (num >= 1000000000000) {
+      displayNum = (numCookies / 1000000000000).toFixed(1) + "t"; // trillions
+    } else if (num >= 1000000000) {
       displayNum = (numCookies / 1000000000).toFixed(1) + "b"; // billions
     } else if (num >= 1000000) {
       displayNum = (numCookies / 1000000).toFixed(1) + "m"; // millions
@@ -121,18 +124,20 @@ const Game = () => {
   const handleReset = () => {
     localStorage.clear();
     setCookiesPerClick(1);
-    setNumCookies(1000);
+    setNumCookies(0);
     setUpgradeCost({
       cursor: 10,
-      megaCursor: 50,
-      grandma: 100,
-      farm: 1000,
+      megaCursor: 100,
+      grandma: 1500,
+      farm: 20000,
+      factory: 500000,
     });
     setUpgradesOwned({
       cursor: 0,
       megaCursor: 0,
       grandma: 0,
       farm: 0,
+      factory: 0,
     });
   };
 
@@ -164,7 +169,7 @@ const Game = () => {
         </Indicator>
         <SectionTitle>UPGRADES</SectionTitle>
         <Upgrades>
-          {upgrades.map((item) => {
+          {upgrades.map((item, i) => {
             let firstItem;
             if (upgrades.indexOf(item) === 0) {
               firstItem = true;
@@ -175,9 +180,10 @@ const Game = () => {
             }
             return (
               <Item
+                key={i}
                 item={item}
                 firstItem={firstItem}
-                upgradeCost={upgradeCost[item.id]}
+                upgradeCost={upgradeCost[item.id].toLocaleString()}
                 available={available}
                 upgradesOwned={upgradesOwned[item.id]}
                 buyUpgrade={() => buyUpgrade(item)}

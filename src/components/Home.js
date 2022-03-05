@@ -6,17 +6,14 @@ const Home = () => {
   return (
     <Wrapper>
       <Title>Cookie Heaven</Title>
-      <GameLink to="/game">~ Go to Game ~</GameLink>
+      <GameLink to="/game">Start Game</GameLink>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
+  display: grid;
+  place-content: center;
   height: 100vh;
 `;
 
@@ -24,6 +21,7 @@ const Title = styled.h1`
   font-size: 5rem;
   font-family: "Emilys Candy";
   text-shadow: 0 0 10px white;
+  text-align: center;
 `;
 
 const GameLink = styled(Link)`
