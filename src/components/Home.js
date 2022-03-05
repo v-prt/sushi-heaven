@@ -5,8 +5,8 @@ import styled from "styled-components/macro";
 const Home = () => {
   return (
     <Wrapper>
-      <Title>Cookie Heaven</Title>
-      <GameLink to="/game">Start Game</GameLink>
+      <Title>Sushi Heaven</Title>
+      <GameLink to="/game">Let's play!</GameLink>
     </Wrapper>
   );
 };
@@ -20,14 +20,20 @@ const Wrapper = styled.div`
 const Title = styled.h1`
   font-size: 5rem;
   font-family: "Emilys Candy";
-  text-shadow: 0 0 10px white;
+  text-shadow: 0 0 10px #fff;
   text-align: center;
+  color: #fff;
 `;
 
 const GameLink = styled(Link)`
-  width: auto;
+  background: #ff4da6;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin: 20px auto;
+  width: fit-content;
   &:hover {
-    background: transparent;
+    background: #fff;
     color: #ff4da6;
   }
 `;
