@@ -103,7 +103,7 @@ const Game = () => {
     setNumCookies(numCookies + cookiesEarned);
     // FIXME: "warning - React Hook useEffect has missing dependencies: 'cookiesPerSec', 'numCookies', and 'setNumCookies'. Either include them or remove the dependency array"
     // not sure how to fix, works anyway (if I remove the [] it breaks)
-  }, []);
+  }, [cookiesPerSec, numCookies, setNumCookies]);
 
   // shorten display number of cookies when over threshold
   let displayNum = numCookies;
