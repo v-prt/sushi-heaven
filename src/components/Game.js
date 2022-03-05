@@ -13,11 +13,11 @@ import upgrades from "../data";
 
 const Game = () => {
   const [sushiPerClick, setSushiPerClick] = useState(1);
-  const [numSushi, setNumSushi] = usePersistedState(1000, "num-sushi");
+  const [numSushi, setNumSushi] = usePersistedState(0, "num-sushi");
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
     {
-      cursor: 0,
       megaCursor: 0,
+      autoCursor: 0,
       jiro: 0,
       farm: 0,
       factory: 0,
@@ -26,8 +26,8 @@ const Game = () => {
   );
   const [upgradeCost, setUpgradeCost] = usePersistedState(
     {
-      cursor: 10,
-      megaCursor: 100,
+      megaCursor: 10,
+      autoCursor: 100,
       jiro: 1500,
       farm: 20000,
       factory: 500000,
@@ -82,7 +82,7 @@ const Game = () => {
   const calcSushiPerSec = (upgradesOwned) => {
     let num = 0;
     num =
-      1 * upgradesOwned["cursor"] +
+      1 * upgradesOwned["autoCursor"] +
       10 * upgradesOwned["jiro"] +
       80 * upgradesOwned["farm"] +
       150 * upgradesOwned["factory"];
@@ -130,15 +130,15 @@ const Game = () => {
     setSushiPerClick(1);
     setNumSushi(0);
     setUpgradeCost({
-      cursor: 10,
-      megaCursor: 100,
+      megaCursor: 10,
+      autoCursor: 100,
       jiro: 1500,
       farm: 20000,
       factory: 500000,
     });
     setUpgradesOwned({
-      cursor: 0,
       megaCursor: 0,
+      autoCursor: 0,
       jiro: 0,
       farm: 0,
       factory: 0,
