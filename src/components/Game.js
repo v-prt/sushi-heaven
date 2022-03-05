@@ -256,44 +256,17 @@ const Options = styled.div`
   border-bottom: 6px solid white;
 `;
 
-const Indicator = styled.div`
-  text-align: center;
-  margin: 30px;
-  p {
-    font-size: 1.1rem;
-    color: #666;
-    strong {
-      color: #000;
-    }
-  }
-`;
-
-const Total = styled.h3`
-  font-size: 2rem;
-  font-weight: bold;
-  color: #ff4da6;
-  margin-bottom: 10px;
-`;
-
-const SectionTitle = styled.h3`
-  text-align: center;
-  font-size: 1.2rem;
-  background: #f2f2f2;
-  width: 100%;
-  padding: 10px 0;
-  border-bottom: 2px solid #e6e6e6;
-`;
-
-const Upgrades = styled.div`
-  width: 100%;
-`;
-
 const HomeLink = styled(Link)`
   background: #f2f2f2;
   margin: 5px;
   font-size: 0.9rem;
   color: #999;
   border-radius: 10px;
+  &:focus {
+    outline: none;
+    background: #66b5ff;
+    color: white;
+  }
 `;
 
 const Button = styled.button`
@@ -308,11 +281,49 @@ const Button = styled.button`
   transition: 0.3s ease-in-out;
   margin: 5px;
   border-radius: 10px;
+  &:focus {
+    outline: none;
+    background: #66b5ff;
+    color: white;
+  }
   &:hover {
     cursor: pointer;
     background: #66b5ff;
     color: white;
   }
+`;
+
+const Indicator = styled.div`
+  text-align: center;
+  margin: 30px;
+  p {
+    font-size: 1.1rem;
+    color: #666;
+    strong {
+      color: #373737;
+    }
+  }
+`;
+
+const Total = styled.h3`
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff4da6;
+  margin-bottom: 10px;
+`;
+
+const SectionTitle = styled.h3`
+  color: #1a1a1a;
+  text-align: center;
+  font-size: 1.2rem;
+  background: #f2f2f2;
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 2px solid #e6e6e6;
+`;
+
+const Upgrades = styled.div`
+  width: 100%;
 `;
 
 export default Game;

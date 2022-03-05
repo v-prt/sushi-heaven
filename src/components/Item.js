@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components/macro";
+import { RiMoneyDollarCircleLine } from "react-icons/ri";
 
 const Item = ({
   item,
@@ -10,22 +11,7 @@ const Item = ({
   buyUpgrade,
 }) => {
   const upgrade = useRef(null);
-
-  // FOCUSES ON FIRST ITEM ON LOAD
-  // useEffect(() => {
-  //   if (firstItem) {
-  //     upgrade.current.focus();
-  //   }
-  // }, [firstItem]);
-
-  // DISABLES & ENABLES UPGRADES
-  useEffect(() => {
-    if (available === false) {
-      upgrade.current.disabled = true;
-    } else if (available === true) {
-      upgrade.current.disabled = false;
-    }
-  }, [available]);
+  console.log(item, available);
 
   let itemUse = () => {
     if (item.id === "megaCursor") {
@@ -36,48 +22,49 @@ const Item = ({
   };
 
   return (
-    <Button id={item.id} onMouseDown={buyUpgrade} ref={upgrade}>
+    <Wrapper id={item.id} ref={upgrade}>
       <ItemDetails>
         <Name>{item.name}</Name>
-        <Cost>Cost: {upgradeCost} sushi</Cost>
-        <Use>{itemUse()}</Use>
+        <div className="purchase">
+          <BuyBtn onClick={buyUpgrade} disabled={!available}>
+            Buy
+          </BuyBtn>
+          <div className="info">
+            <Cost className={!available && "not-available"}>
+              <RiMoneyDollarCircleLine /> {upgradeCost} sushi
+            </Cost>
+            <Use>{itemUse()}</Use>
+          </div>
+        </div>
       </ItemDetails>
-      <NumOwned>
+      <NumOwned className={upgradesOwned === 0 && "none"}>
         {upgradesOwned}
         <span>owned</span>
       </NumOwned>
-    </Button>
+    </Wrapper>
   );
 };
 
-const Button = styled.button`
+const Wrapper = styled.div`
   background: #fff;
   color: #1a1a1a;
   width: 100%;
-  padding: 10px;
+  padding: 20px;
   border-style: none;
   border-bottom: 1px solid #ccc;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: 0.2s ease-in-out;
-  &:hover,
-  &:focus {
-    background: #f7f7f7;
-    cursor: pointer;
-    outline: none;
+  .purchase {
+    display: flex;
+    align-items: center;
   }
   &:last-child {
     border-bottom: none;
   }
-  &:disabled {
-    pointer-events: none;
-    opacity: 0.3;
-  }
 `;
 
 const ItemDetails = styled.div`
-  padding-left: 10px;
   text-align: left;
 `;
 
@@ -88,8 +75,36 @@ const Name = styled.p`
   margin-bottom: 10px;
 `;
 
+const BuyBtn = styled.button`
+  background: #ccc;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border: none;
+  padding: 5px 10px;
+  margin-right: 10px;
+  transition: 0.3s ease-in-out;
+  border-radius: 5px;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  &:focus,
+  &:hover {
+    outline: none;
+    background: #66b5ff;
+    color: white;
+  }
+`;
+
 const Cost = styled.p`
-  font-size: 1rem;
+  color: #373737;
+  display: flex;
+  align-items: center;
+  &.not-available {
+    color: #fd6743;
+  }
 `;
 
 const Use = styled.p`
@@ -97,15 +112,18 @@ const Use = styled.p`
   color: #666;
 `;
 
-const NumOwned = styled.p`
+const NumOwned = styled.div`
+  color: #373737;
   font-weight: bold;
   font-size: 2rem;
-  padding-right: 10px;
   display: grid;
   place-content: center;
+  text-align: center;
+  &.none {
+    color: #ccc;
+  }
   span {
     font-size: 0.8rem;
-    color: #999;
   }
 `;
 

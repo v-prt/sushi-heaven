@@ -26,7 +26,7 @@ const Title = styled.h1`
 `;
 
 const GameLink = styled(Link)`
-  background: #ff4da6;
+  background: #66b5ff;
   color: #fff;
   padding: 10px 20px;
   border-radius: 5px;
@@ -34,7 +34,7 @@ const GameLink = styled(Link)`
   width: fit-content;
   &:hover {
     background: #fff;
-    color: #ff4da6;
+    color: #66b5ff;
   }
 `;
 
