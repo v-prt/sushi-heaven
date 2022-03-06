@@ -341,6 +341,7 @@ export const Game = () => {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   min-height: 100vh;
   min-width: 100vw;
   @media only screen and (min-width: 800px) {
@@ -349,7 +350,8 @@ const Wrapper = styled.div`
 `
 
 const ProductionArea = styled.div`
-  flex: 1;
+  width: 100%;
+  height: 100vh;
   display: grid;
   place-content: center;
 `
@@ -420,7 +422,7 @@ const Sushi = styled.img`
 `
 
 const Console = styled.div`
-  max-height: 100vh;
+  height: 100vh;
   display: flex;
   .inner {
     background: #fff;
