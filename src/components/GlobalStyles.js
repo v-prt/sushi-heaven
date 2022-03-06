@@ -82,25 +82,7 @@ export default createGlobalStyle`
 
   body {
     line-height: 1.25;
-    background: linear-gradient(to bottom right, #ffb3d9, #b3daff);
-  }
-
-  a {
-    background: transparent;
-    border: none;
-    font-family: "Raleway", sans-serif;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #66b5ff;
-    text-decoration: none;
-    text-align: center;
-    padding: 10px;
-    width: 50%;
-    transition: 0.3s ease-in-out;
-    &:hover {
-      cursor: pointer;
-      background: #66b5ff;
-      color: white;
-    }
+    /* background: linear-gradient(to bottom right, #ffb3d9, #b3daff); */
+    background: linear-gradient(to bottom right,#ffecb3e3,#ffb3d2ad);
   }
 `;

@@ -8,11 +8,13 @@ import useKeyUp from "../hooks/use-key-up.hook";
 import usePersistedState from "../hooks/use-persisted-state.hook";
 
 import sushi from "../assets/cute-sushi.png";
+import { RiHomeHeartLine } from "react-icons/ri";
+import { IoReloadCircleOutline } from "react-icons/io5";
 import Item from "./Item";
 import upgrades from "../data";
 
 const Game = () => {
-  const [newGame, setNewGame] = useState(true);
+  const [newGame, setNewGame] = useState(false);
   const [sushiPerClick, setSushiPerClick] = useState(1);
   const [numSushi, setNumSushi] = usePersistedState(0, "num-sushi");
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
@@ -174,12 +176,22 @@ const Game = () => {
         </GameButton>
       </GameArea>
       <Factory>
-        <Options>
-          <HomeLink to="/">Home</HomeLink>
-          <Button onClick={handleReset}>Reset</Button>
-        </Options>
+        <Actions>
+          <Link to="/" className="action">
+            <span className="icon">
+              <RiHomeHeartLine />
+            </span>
+            Home
+          </Link>
+          <button className="action" onClick={handleReset}>
+            <span className="icon">
+              <IoReloadCircleOutline />
+            </span>
+            Reset
+          </button>
+        </Actions>
         <Indicator>
-          <Total>{displayNum} sushi</Total>
+          <Total className={numSushi === 0 && "none"}>{displayNum} sushi</Total>
           <p>
             <strong>+{sushiPerSec}</strong> per second
           </p>
@@ -312,46 +324,39 @@ const Factory = styled.div`
   }
 `;
 
-const Options = styled.div`
+const Actions = styled.div`
   display: flex;
+  justify-content: space-between;
   width: 100%;
   border-bottom: 6px solid white;
-`;
-
-const HomeLink = styled(Link)`
-  background: #f2f2f2;
-  margin: 5px;
-  font-size: 0.9rem;
-  color: #999;
-  border-radius: 10px;
-  &:focus {
-    outline: none;
-    background: #66b5ff;
-    color: white;
-  }
-`;
-
-const Button = styled.button`
-  background: #f2f2f2;
-  font-family: "Raleway", sans-serif;
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #999;
-  flex: 1 1 auto;
-  border: none;
-  padding: 10px;
-  transition: 0.3s ease-in-out;
-  margin: 5px;
-  border-radius: 10px;
-  &:focus {
-    outline: none;
-    background: #66b5ff;
-    color: white;
-  }
-  &:hover {
+  .action {
+    background: #f2f2f2;
+    font-family: "Raleway", sans-serif;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #999;
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
     cursor: pointer;
-    background: #66b5ff;
-    color: white;
+    .icon {
+      display: grid;
+      margin-right: 5px;
+      font-size: 1.1rem;
+    }
+    &:hover,
+    &:focus {
+      outline: none;
+      background: #fd6743;
+      color: white;
+    }
   }
 `;
 
@@ -370,8 +375,11 @@ const Indicator = styled.div`
 const Total = styled.h3`
   font-size: 2rem;
   font-weight: bold;
-  color: #ff4da6;
+  color: #ff6db6;
   margin-bottom: 10px;
+  &.none {
+    color: #999;
+  }
 `;
 
 const SectionTitle = styled.h3`

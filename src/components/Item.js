@@ -85,7 +85,7 @@ const BuyBtn = styled.button`
   &:focus,
   &:hover {
     outline: none;
-    background: #66b5ff;
+    background: #fd6743;
     color: white;
   }
 `;
