@@ -2,11 +2,13 @@ import React, { useRef } from 'react'
 import styled from 'styled-components/macro'
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 
-export const Item = ({ item, cost, available, numOwned, buyUpgrade }) => {
+export const Item = ({ item, type, cost, currency, available, numOwned, buyUpgrade }) => {
   const upgrade = useRef(null)
 
   let itemUse = () => {
-    if (item.id === 'megaCursor') {
+    if (type === 'restaurant') {
+      return `Sells ${item.value} sushi per second.`
+    } else if (item.id === 'megaCursor') {
       return `Increases sushi per click by ${item.value}.`
     } else {
       return `Produces ${item.value} sushi per second.`
@@ -23,7 +25,7 @@ export const Item = ({ item, cost, available, numOwned, buyUpgrade }) => {
           </BuyBtn>
           <div className='info'>
             <Cost className={!available && 'not-available'}>
-              <RiMoneyDollarCircleLine /> {cost} sushi
+              <RiMoneyDollarCircleLine /> {cost} {currency}
             </Cost>
             <Use>{itemUse()}</Use>
           </div>

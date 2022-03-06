@@ -11,12 +11,16 @@ import sushi from '../assets/sushi.png'
 import { RiHomeHeartLine } from 'react-icons/ri'
 import { IoReloadCircleOutline } from 'react-icons/io5'
 import { Item } from './Item'
-import { upgrades } from '../data'
+import { upgrades, restaurants } from '../data'
 
 export const Game = () => {
   const [newGame, setNewGame] = useState(false)
   const [sushiPerClick, setSushiPerClick] = useState(1)
   const [numSushi, setNumSushi] = usePersistedState(0, 'num-sushi')
+  const [money, setMoney] = usePersistedState(0, 'money')
+  const [viewUpgrades, setViewUpgrades] = useState(false)
+  const [viewRestaurants, setViewRestaurants] = useState(false)
+
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
     {
       megaCursor: 0,
@@ -36,6 +40,22 @@ export const Game = () => {
       factory: 500000,
     },
     'upgrade-cost'
+  )
+  const [restaurantsOwned, setRestaurantsOwned] = usePersistedState(
+    {
+      bar: 1,
+      restaurant: 0,
+      chain: 0,
+    },
+    'restaurants-owned'
+  )
+  const [restaurantCost, setRestaurantCost] = usePersistedState(
+    {
+      bar: 10000,
+      restaurant: 75000,
+      chain: 2250000,
+    },
+    'restaurant-cost'
   )
 
   useEffect(() => {
@@ -96,16 +116,42 @@ export const Game = () => {
       150 * upgradesOwned['factory']
     return num
   }
-
   const sushiPerSec = calcSushiPerSec(upgradesOwned)
 
   useEffect(() => {
     setSushiPerClick(3 * upgradesOwned['megaCursor'] + 1)
   }, [upgradesOwned])
 
+  const buyRestaurant = item => {
+    setMoney(money - restaurantCost[item.id])
+    setRestaurantsOwned({
+      ...restaurantsOwned,
+      [item.id]: restaurantsOwned[item.id] + 1,
+    })
+    setRestaurantCost({
+      ...restaurantCost,
+      [item.id]: Math.floor(restaurantCost[item.id] * 1.75),
+    })
+  }
+
+  const calcMoneyPerSec = restaurantsOwned => {
+    let num = 0
+    num =
+      1 * restaurantsOwned['bar'] +
+      100 * restaurantsOwned['restaurant'] +
+      750 * restaurantsOwned['chain']
+    return num / 2
+  }
+  const moneyPerSec = calcMoneyPerSec(restaurantsOwned)
+
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    setNumSushi(numSushi + sushiPerSec)
+    if (numSushi > 0) {
+      setNumSushi(numSushi + sushiPerSec - moneyPerSec * 2)
+    }
+    if (numSushi > 0) {
+      setMoney(money + moneyPerSec)
+    }
     // stores the number of milliseconds since midnight 1/1/1970
     localStorage.setItem('timer', new Date().getTime())
   }, 1000)
@@ -140,6 +186,7 @@ export const Game = () => {
       localStorage.clear()
       setSushiPerClick(1)
       setNumSushi(0)
+      setMoney(0)
       setUpgradeCost({
         megaCursor: 10,
         autoCursor: 100,
@@ -153,6 +200,16 @@ export const Game = () => {
         jiro: 0,
         farm: 0,
         factory: 0,
+      })
+      setRestaurantCost({
+        bar: 10000,
+        restaurant: 75000,
+        chain: 2250000,
+      })
+      setRestaurantsOwned({
+        bar: 1,
+        restaurant: 0,
+        chain: 0,
       })
     }
   }
@@ -189,16 +246,27 @@ export const Game = () => {
           </button>
         </Actions>
         <Indicator>
+          {/* TODO: improve styling & layout */}
           <Total className={numSushi === 0 && 'none'}>{displayNum} sushi</Total>
           <p>
-            <strong>+{sushiPerSec}</strong> per second
+            <strong>+{sushiPerSec}</strong> sushi per second
           </p>
           <p>
-            <strong>+{sushiPerClick}</strong> per click
+            <strong>+{sushiPerClick}</strong> sushi per click
+          </p>
+          <Total className={money === 0 && 'none'}>${money}</Total>
+          <p>
+            <strong>+{moneyPerSec}</strong> income per second
           </p>
         </Indicator>
-        <SectionTitle>Upgrades</SectionTitle>
-        <Upgrades>
+        <SectionTitle
+          onClick={() => {
+            setViewRestaurants(false)
+            setViewUpgrades(!viewUpgrades)
+          }}>
+          Upgrades
+        </SectionTitle>
+        <Upgrades expand={viewUpgrades}>
           {upgrades.map((item, i) => {
             let available = false
             if (numSushi >= upgradeCost[item.id]) {
@@ -208,6 +276,7 @@ export const Game = () => {
               <Item
                 key={i}
                 item={item}
+                currency={item.currency}
                 cost={upgradeCost[item.id].toLocaleString()}
                 available={available}
                 numOwned={upgradesOwned[item.id]}
@@ -216,6 +285,33 @@ export const Game = () => {
             )
           })}
         </Upgrades>
+        <SectionTitle
+          onClick={() => {
+            setViewUpgrades(false)
+            setViewRestaurants(!viewRestaurants)
+          }}>
+          Restaurants
+        </SectionTitle>
+        <Restaurants expand={viewRestaurants}>
+          {restaurants.map((item, i) => {
+            let available = false
+            if (money >= restaurantCost[item.id]) {
+              available = true
+            }
+            return (
+              <Item
+                key={i}
+                item={item}
+                type='restaurant'
+                currency={item.currency}
+                cost={restaurantCost[item.id].toLocaleString()}
+                available={available}
+                numOwned={restaurantsOwned[item.id]}
+                buyRestaurant={() => buyRestaurant(item)}
+              />
+            )
+          })}
+        </Restaurants>
       </Factory>
     </Wrapper>
   )
@@ -229,12 +325,12 @@ const Wrapper = styled.div`
   padding: 40px 0;
   @media only screen and (min-width: 800px) {
     flex-direction: row;
+    align-items: flex-start;
   }
 `
 
 const GameArea = styled.div`
-  display: grid;
-  place-content: center;
+  margin-top: 50px;
 `
 
 const Instructions = styled.div`
@@ -386,8 +482,28 @@ const SectionTitle = styled.h3`
   width: 100%;
   padding: 10px 0;
   border-bottom: 2px solid #e6e6e6;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    background: #e6e6e6;
+  }
 `
 
+// TODO: improve transitions for expanding/closing
 const Upgrades = styled.div`
   width: 100%;
+  display: ${props => (props.expand ? 'block' : 'none')};
+  /* visibility: ${props => (props.expand ? 'visible' : 'hidden')};
+  opacity: ${props => (props.expand ? '1' : '0')};
+  max-height: ${props => (props.expand ? '5000px' : '0')};
+  transition: 0.3s ease-in-out; */
+`
+
+const Restaurants = styled.div`
+  width: 100%;
+  display: ${props => (props.expand ? 'block' : 'none')};
+  /* visibility: ${props => (props.expand ? 'visible' : 'hidden')};
+  opacity: ${props => (props.expand ? '1' : '0')};
+  max-height: ${props => (props.expand ? '5000px' : '0')};
+  transition: 0.3s ease-in-out; */
 `
