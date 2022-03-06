@@ -12,6 +12,7 @@ import Item from "./Item";
 import upgrades from "../data";
 
 const Game = () => {
+  const [newGame, setNewGame] = useState(true);
   const [sushiPerClick, setSushiPerClick] = useState(1);
   const [numSushi, setNumSushi] = usePersistedState(0, "num-sushi");
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
@@ -34,6 +35,12 @@ const Game = () => {
     },
     "upgrade-cost"
   );
+
+  useEffect(() => {
+    if (numSushi > 0) {
+      setNewGame(false);
+    } else setNewGame(true);
+  }, [numSushi]);
 
   // points (sushiPerClick) briefly appear on sushi in random spots
   const pointsRef = useRef(null);
@@ -156,11 +163,16 @@ const Game = () => {
 
   return (
     <Wrapper>
-      {/* TODO: instructions (floating animation, arrow pointing at sushi, goes away after first click) */}
-      <GameButton onClick={makeSushi}>
-        <Points ref={pointsRef}>+{sushiPerClick}</Points>
-        <Sushi src={sushi} ref={sushiRef} />
-      </GameButton>
+      <GameArea>
+        <Instructions newGame={newGame}>
+          Click me or tap the spacebar to make sushi!
+          <span className="arrow" />
+        </Instructions>
+        <GameButton onClick={makeSushi}>
+          <Points ref={pointsRef}>+{sushiPerClick}</Points>
+          <Sushi src={sushi} ref={sushiRef} />
+        </GameButton>
+      </GameArea>
       <Factory>
         <Options>
           <HomeLink to="/">Home</HomeLink>
@@ -203,6 +215,43 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const GameArea = styled.div`
+  display: grid;
+  place-content: center;
+`;
+
+const Instructions = styled.div`
+  visibility: ${(props) => (props.newGame ? "visible" : "hidden")};
+  opacity: ${(props) => (props.newGame ? "1" : "0")};
+  transition: 0.2s ease-in-out;
+  background: rgba(255, 255, 255, 0.7);
+  border: 5px solid #fff;
+  border-radius: 5px;
+  padding: 20px;
+  width: 250px;
+  margin: auto;
+  text-align: center;
+  position: relative;
+  animation: bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98);
+  .arrow {
+    background: #fff;
+    height: 7px;
+    width: 7px;
+    transform: rotate(45deg);
+    position: absolute;
+    left: 120px;
+    bottom: -8px;
+  }
+  @keyframes bounce {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(-15px);
+    }
+  }
 `;
 
 const GameButton = styled.button`

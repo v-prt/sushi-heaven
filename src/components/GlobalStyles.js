@@ -8,6 +8,16 @@ export default createGlobalStyle`
     -webkit-font-smoothing: antialiased;
   }
 
+  // prevents text selection
+  * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  }
+
   html, body, div,
   input, button, select, option,
   h1, h2, h3, h4, h5, h6, p,
