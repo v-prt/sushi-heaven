@@ -18,6 +18,12 @@ export default createGlobalStyle`
   user-select: none;
   }
 
+  html, body {
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+  }
+
   html, body, div,
   input, button, select, option,
   h1, h2, h3, h4, h5, h6, p,

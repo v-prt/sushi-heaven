@@ -213,8 +213,13 @@ const Game = () => {
 
 const Wrapper = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 40px 0;
+  @media only screen and (min-width: 800px) {
+    flex-direction: row;
+  }
 `;
 
 const GameArea = styled.div`
@@ -234,7 +239,10 @@ const Instructions = styled.div`
   margin: auto;
   text-align: center;
   position: relative;
-  animation: bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98);
+  animation: ${(props) =>
+    props.newGame
+      ? "bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98)"
+      : "none"};
   .arrow {
     background: #fff;
     height: 7px;
@@ -293,12 +301,15 @@ const Factory = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 30px;
   border-radius: 10px;
-  width: 400px;
+  width: 90vw;
+  max-width: 400px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   background: #fff;
   overflow: hidden;
+  @media only screen and (min-width: 800px) {
+    margin: 30px;
+  }
 `;
 
 const Options = styled.div`
