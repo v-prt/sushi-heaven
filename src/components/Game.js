@@ -453,10 +453,8 @@ const Actions = styled.div`
 `
 
 const Indicator = styled.div`
-  text-align: center;
-  margin: 30px;
+  margin-bottom: 30px;
   p {
-    font-size: 1.1rem;
     color: #666;
     strong {
       color: #373737;
@@ -468,7 +466,7 @@ const Total = styled.h3`
   font-size: 2rem;
   font-weight: bold;
   color: #ff6db6;
-  margin-bottom: 10px;
+  margin-top: 10px;
   &.none {
     color: #999;
   }
