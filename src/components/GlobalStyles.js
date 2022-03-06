@@ -83,4 +83,12 @@ export default createGlobalStyle`
     /* background: linear-gradient(to bottom right, #ffb3d9, #b3daff); */
     background: linear-gradient(to bottom right,#ffecb3e3,#ffb3d2ad);
   }
+
+  button {
+    background: transparent;
+    border: 0;
+    &:focus {
+      outline: none;
+    }
+  }
 `

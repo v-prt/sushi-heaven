@@ -5,7 +5,7 @@ import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 export const Item = ({ item, type, cost, currency, available, numOwned, buyUpgrade }) => {
   const upgrade = useRef(null)
 
-  let itemUse = () => {
+  const itemUse = () => {
     if (type === 'restaurant') {
       return `Sells ${item.value} sushi per second.`
     } else if (item.id === 'megaCursor') {
@@ -20,7 +20,10 @@ export const Item = ({ item, type, cost, currency, available, numOwned, buyUpgra
       <ItemDetails>
         <Name>{item.name}</Name>
         <div className='purchase'>
-          <BuyBtn onClick={buyUpgrade} disabled={!available}>
+          <BuyBtn
+            className={type === 'restaurant' && 'coin'}
+            onClick={buyUpgrade}
+            disabled={!available}>
             Buy
           </BuyBtn>
           <div className='info'>
@@ -43,18 +46,16 @@ const Wrapper = styled.div`
   background: #fff;
   color: #1a1a1a;
   width: 100%;
-  padding: 20px;
-  border-style: none;
-  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  border: 1px dotted #ccc;
+  border-radius: 5px;
+  margin: 5px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   .purchase {
     display: flex;
     align-items: center;
-  }
-  &:last-child {
-    border-bottom: none;
   }
 `
 
@@ -70,25 +71,27 @@ const Name = styled.p`
 `
 
 const BuyBtn = styled.button`
-  background: #ccc;
+  background: #ff6db6;
   color: #fff;
   font-size: 0.9rem;
   font-weight: bold;
   border: none;
   padding: 5px 10px;
   margin-right: 10px;
-  transition: 0.3s ease-in-out;
+  transition: 0.1s ease-in-out;
   border-radius: 5px;
   cursor: pointer;
+  &.coin {
+    background: gold;
+  }
   &:disabled {
-    opacity: 0.3;
+    background: #e6e6e6;
     pointer-events: none;
   }
-  &:focus,
-  &:hover {
+  &:hover:not(:active) {
+    box-shadow: -2px 2px 0 #333;
+    transform: translate(0.25em, -0.25em);
     outline: none;
-    background: #fd6743;
-    color: white;
   }
 `
 

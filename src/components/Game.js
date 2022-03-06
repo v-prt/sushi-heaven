@@ -8,6 +8,8 @@ import { useKeyUp } from '../hooks/use-key-up.hook'
 import { usePersistedState } from '../hooks/use-persisted-state.hook'
 
 import sushi from '../assets/sushi.png'
+import sushiIcon from '../assets/sushi.svg'
+import moneyIcon from '../assets/money.svg'
 import { RiHomeHeartLine } from 'react-icons/ri'
 import { IoReloadCircleOutline } from 'react-icons/io5'
 import { Item } from './Item'
@@ -18,7 +20,7 @@ export const Game = () => {
   const [sushiPerClick, setSushiPerClick] = useState(1)
   const [numSushi, setNumSushi] = usePersistedState(0, 'num-sushi')
   const [money, setMoney] = usePersistedState(0, 'money')
-  const [viewUpgrades, setViewUpgrades] = useState(false)
+  const [viewUpgrades, setViewUpgrades] = useState(true)
   const [viewRestaurants, setViewRestaurants] = useState(false)
 
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
@@ -168,13 +170,13 @@ export const Game = () => {
   let displayNum = numSushi
   const compactDisplayNum = num => {
     if (num >= 1000000000000) {
-      displayNum = (numSushi / 1000000000000).toFixed(1) + 't' // trillions
+      displayNum = (numSushi / 1000000000000).toFixed(2) + 't' // trillions
     } else if (num >= 1000000000) {
-      displayNum = (numSushi / 1000000000).toFixed(1) + 'b' // billions
+      displayNum = (numSushi / 1000000000).toFixed(2) + 'b' // billions
     } else if (num >= 1000000) {
-      displayNum = (numSushi / 1000000).toFixed(1) + 'm' // millions
+      displayNum = (numSushi / 1000000).toFixed(2) + 'm' // millions
     } else if (num >= 1000) {
-      displayNum = (numSushi / 1000).toFixed(1) + 'k' // thousands
+      displayNum = (numSushi / 1000).toFixed(2) + 'k' // thousands
     }
   }
   compactDisplayNum(numSushi)
@@ -220,99 +222,118 @@ export const Game = () => {
 
   return (
     <Wrapper>
-      <GameArea>
+      <ProductionArea>
         <Instructions newGame={newGame}>
           Click me or tap the spacebar to make sushi!
           <span className='arrow' />
         </Instructions>
-        <GameButton onClick={makeSushi}>
+        <Produce onClick={makeSushi}>
           <Points ref={pointsRef}>+{sushiPerClick}</Points>
           <Sushi src={sushi} ref={sushiRef} />
-        </GameButton>
-      </GameArea>
-      <Factory>
-        <Actions>
-          <Link to='/' className='action'>
-            <span className='icon'>
-              <RiHomeHeartLine />
-            </span>
-            Home
-          </Link>
-          <button className='action' onClick={handleReset}>
-            <span className='icon'>
-              <IoReloadCircleOutline />
-            </span>
-            Reset
-          </button>
-        </Actions>
-        <Indicator>
-          {/* TODO: improve styling & layout */}
-          <Total className={numSushi === 0 && 'none'}>{displayNum} sushi</Total>
-          <p>
-            <strong>+{sushiPerSec}</strong> sushi per second
-          </p>
-          <p>
-            <strong>+{sushiPerClick}</strong> sushi per click
-          </p>
-          <Total className={money === 0 && 'none'}>${money}</Total>
-          <p>
-            <strong>+{moneyPerSec}</strong> income per second
-          </p>
-        </Indicator>
-        <SectionTitle
-          onClick={() => {
-            setViewRestaurants(false)
-            setViewUpgrades(!viewUpgrades)
-          }}>
-          Upgrades
-        </SectionTitle>
-        <Upgrades expand={viewUpgrades}>
-          {upgrades.map((item, i) => {
-            let available = false
-            if (numSushi >= upgradeCost[item.id]) {
-              available = true
-            }
-            return (
-              <Item
-                key={i}
-                item={item}
-                currency={item.currency}
-                cost={upgradeCost[item.id].toLocaleString()}
-                available={available}
-                numOwned={upgradesOwned[item.id]}
-                buyUpgrade={() => buyUpgrade(item)}
-              />
-            )
-          })}
-        </Upgrades>
-        <SectionTitle
-          onClick={() => {
-            setViewUpgrades(false)
-            setViewRestaurants(!viewRestaurants)
-          }}>
-          Restaurants
-        </SectionTitle>
-        <Restaurants expand={viewRestaurants}>
-          {restaurants.map((item, i) => {
-            let available = false
-            if (money >= restaurantCost[item.id]) {
-              available = true
-            }
-            return (
-              <Item
-                key={i}
-                item={item}
-                type='restaurant'
-                currency={item.currency}
-                cost={restaurantCost[item.id].toLocaleString()}
-                available={available}
-                numOwned={restaurantsOwned[item.id]}
-                buyRestaurant={() => buyRestaurant(item)}
-              />
-            )
-          })}
-        </Restaurants>
-      </Factory>
+        </Produce>
+      </ProductionArea>
+      <Console>
+        <div className='inner'>
+          <Actions>
+            <Link to='/' className='action'>
+              <span className='icon'>
+                <RiHomeHeartLine />
+              </span>
+              Home
+            </Link>
+            <button className='action' onClick={handleReset}>
+              <span className='icon'>
+                <IoReloadCircleOutline />
+              </span>
+              Reset
+            </button>
+          </Actions>
+          <Overview>
+            <div className='sushi-info'>
+              <div className='row'>
+                <img src={sushiIcon} alt='sushi' />
+                <Total className={numSushi === 0 && 'none'}>{displayNum}</Total>
+              </div>
+              <div className='stats'>
+                <p>
+                  <strong>+{sushiPerSec}</strong> sushi per second
+                </p>
+                <p>
+                  <strong>+{sushiPerClick}</strong> sushi per click
+                </p>
+              </div>
+            </div>
+            <div className='income-info'>
+              <div className='row'>
+                <img src={moneyIcon} alt='sushi' />
+                <Total className={`money ${money === 0 && 'none'}`}>{money.toFixed(2)}</Total>
+              </div>
+              <div className='stats'>
+                <p>
+                  <strong>+{moneyPerSec}</strong> income per second
+                </p>
+              </div>
+            </div>
+          </Overview>
+          <MenuTabs>
+            <h3
+              className={`upgrades ${viewUpgrades && 'active'}`}
+              onClick={() => {
+                setViewRestaurants(false)
+                setViewUpgrades(true)
+              }}>
+              Upgrades
+            </h3>
+            <h3
+              className={`restaurants ${viewRestaurants && 'active'}`}
+              onClick={() => {
+                setViewUpgrades(false)
+                setViewRestaurants(true)
+              }}>
+              Restaurants
+            </h3>
+          </MenuTabs>
+          <Menu expand={viewUpgrades}>
+            {upgrades.map((item, i) => {
+              let available = false
+              if (numSushi >= upgradeCost[item.id]) {
+                available = true
+              }
+              return (
+                <Item
+                  key={i}
+                  item={item}
+                  currency={item.currency}
+                  cost={upgradeCost[item.id].toLocaleString()}
+                  available={available}
+                  numOwned={upgradesOwned[item.id]}
+                  buyUpgrade={() => buyUpgrade(item)}
+                />
+              )
+            })}
+          </Menu>
+          <Menu expand={viewRestaurants}>
+            {restaurants.map((item, i) => {
+              let available = false
+              if (money >= restaurantCost[item.id]) {
+                available = true
+              }
+              return (
+                <Item
+                  key={i}
+                  item={item}
+                  type='restaurant'
+                  currency={item.currency}
+                  cost={restaurantCost[item.id].toLocaleString()}
+                  available={available}
+                  numOwned={restaurantsOwned[item.id]}
+                  buyRestaurant={() => buyRestaurant(item)}
+                />
+              )
+            })}
+          </Menu>{' '}
+        </div>
+      </Console>
     </Wrapper>
   )
 }
@@ -320,17 +341,17 @@ export const Game = () => {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 0;
+  min-height: 100vh;
+  min-width: 100vw;
   @media only screen and (min-width: 800px) {
     flex-direction: row;
-    align-items: flex-start;
   }
 `
 
-const GameArea = styled.div`
-  margin-top: 50px;
+const ProductionArea = styled.div`
+  flex: 1;
+  display: grid;
+  place-content: center;
 `
 
 const Instructions = styled.div`
@@ -366,9 +387,7 @@ const Instructions = styled.div`
   }
 `
 
-const GameButton = styled.button`
-  border: none;
-  background: transparent;
+const Produce = styled.div`
   margin: 30px;
   position: relative;
   cursor: pointer;
@@ -400,27 +419,29 @@ const Sushi = styled.img`
   transition: 0.2s ease-in-out;
 `
 
-const Factory = styled.div`
+const Console = styled.div`
+  max-height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  width: 90vw;
-  max-width: 400px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  background: #fff;
-  overflow: hidden;
-  @media only screen and (min-width: 800px) {
-    margin: 30px;
+  .inner {
+    background: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 90vw;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 20px;
+    border-radius: 10px;
+    padding: 10px;
+    @media only screen and (min-width: 800px) {
+      margin: 30px;
+    }
   }
 `
 
 const Actions = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  border-bottom: 6px solid white;
   .action {
     background: #f2f2f2;
     font-family: 'Raleway', sans-serif;
@@ -452,12 +473,26 @@ const Actions = styled.div`
   }
 `
 
-const Indicator = styled.div`
-  margin-bottom: 30px;
-  p {
-    color: #666;
-    strong {
-      color: #373737;
+const Overview = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  .sushi-info,
+  .income-info {
+    padding: 10px;
+    .row {
+      display: flex;
+      align-items: center;
+      img {
+        height: 25px;
+        margin-right: 5px;
+      }
+    }
+    p {
+      color: #666;
+      strong {
+        color: #373737;
+      }
     }
   }
 `
@@ -466,42 +501,49 @@ const Total = styled.h3`
   font-size: 2rem;
   font-weight: bold;
   color: #ff6db6;
-  margin-top: 10px;
+  &.money {
+    color: gold;
+  }
   &.none {
     color: #999;
   }
 `
 
-const SectionTitle = styled.h3`
-  color: #1a1a1a;
-  text-align: center;
-  font-size: 1.2rem;
-  background: #f2f2f2;
-  width: 100%;
-  padding: 10px 0;
-  border-bottom: 2px solid #e6e6e6;
-  transition: 0.2s ease-in-out;
-  cursor: pointer;
-  &:hover {
+const MenuTabs = styled.div`
+  display: flex;
+  margin-top: 10px;
+  h3 {
     background: #e6e6e6;
+    color: #666;
+    text-align: center;
+    font-size: 1.2rem;
+    flex: 1;
+    padding: 10px;
+    border-bottom: 1px solid #e6e6e6;
+    border-radius: 5px 5px 0 0;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+    &.upgrades {
+      margin-right: 5px;
+    }
+    &.restaurants {
+      margin-left: 5px;
+    }
+    &.active {
+      background: #f7f7f7;
+      color: #1a1a1a;
+      border-bottom: 1px solid transparent;
+    }
   }
 `
 
-// TODO: improve transitions for expanding/closing
-const Upgrades = styled.div`
+const Menu = styled.div`
+  display: ${props => (props.expand ? 'flex' : 'none')};
+  background: #f7f7f7;
   width: 100%;
-  display: ${props => (props.expand ? 'block' : 'none')};
-  /* visibility: ${props => (props.expand ? 'visible' : 'hidden')};
-  opacity: ${props => (props.expand ? '1' : '0')};
-  max-height: ${props => (props.expand ? '5000px' : '0')};
-  transition: 0.3s ease-in-out; */
-`
-
-const Restaurants = styled.div`
-  width: 100%;
-  display: ${props => (props.expand ? 'block' : 'none')};
-  /* visibility: ${props => (props.expand ? 'visible' : 'hidden')};
-  opacity: ${props => (props.expand ? '1' : '0')};
-  max-height: ${props => (props.expand ? '5000px' : '0')};
-  transition: 0.3s ease-in-out; */
+  overflow: auto;
+  border-radius: 0 0 5px 5px;
+  flex: 1;
+  padding: 10px;
+  flex-direction: column;
 `
