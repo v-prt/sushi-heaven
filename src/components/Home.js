@@ -1,17 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components/macro";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import styled from 'styled-components/macro'
 
-const Home = () => {
+export const Home = () => {
   return (
     <Wrapper>
       <Title>Sushi Heaven</Title>
-      <Link to="/game" className="action">
+      <Link to='/game' className='action'>
         Let's play!
       </Link>
     </Wrapper>
-  );
-};
+  )
+}
 
 const Wrapper = styled.div`
   display: grid;
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   height: 100vh;
   .action {
     background: #373737;
-    font-family: "Raleway", sans-serif;
+    font-family: 'Raleway', sans-serif;
     font-weight: bold;
     font-size: 0.9rem;
     color: #fff;
@@ -46,13 +46,11 @@ const Wrapper = styled.div`
       color: white;
     }
   }
-`;
+`
 
 const Title = styled.h1`
   font-size: 5rem;
-  font-family: "Emilys Candy";
+  font-family: 'Emilys Candy';
   text-align: center;
   color: #fd6743;
-`;
-
-export default Home;
+`

@@ -1,12 +1,10 @@
-import { useEffect } from "react";
+import { useEffect } from 'react'
 
-const useDocumentTitle = (title, fallbackTitle) => {
+export const useDocumentTitle = (title, fallbackTitle) => {
   useEffect(() => {
-    document.title = `${title}`;
+    document.title = `${title}`
     return () => {
-      document.title = `${fallbackTitle}`;
-    };
-  });
-};
-
-export default useDocumentTitle;
+      document.title = `${fallbackTitle}`
+    }
+  })
+}

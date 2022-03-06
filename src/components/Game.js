@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components/macro";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from 'react'
+import styled from 'styled-components/macro'
+import { Link } from 'react-router-dom'
 
-import useInterval from "../hooks/use-interval.hook";
-import useDocumentTitle from "../hooks/use-document-title.hook";
-import useKeyUp from "../hooks/use-key-up.hook";
-import usePersistedState from "../hooks/use-persisted-state.hook";
+import { useInterval } from '../hooks/use-interval.hook'
+import { useDocumentTitle } from '../hooks/use-document-title.hook'
+import { useKeyUp } from '../hooks/use-key-up.hook'
+import { usePersistedState } from '../hooks/use-persisted-state.hook'
 
-import sushi from "../assets/cute-sushi.png";
-import { RiHomeHeartLine } from "react-icons/ri";
-import { IoReloadCircleOutline } from "react-icons/io5";
-import Item from "./Item";
-import upgrades from "../data";
+import sushi from '../assets/sushi.png'
+import { RiHomeHeartLine } from 'react-icons/ri'
+import { IoReloadCircleOutline } from 'react-icons/io5'
+import { Item } from './Item'
+import { upgrades } from '../data'
 
-const Game = () => {
-  const [newGame, setNewGame] = useState(false);
-  const [sushiPerClick, setSushiPerClick] = useState(1);
-  const [numSushi, setNumSushi] = usePersistedState(0, "num-sushi");
+export const Game = () => {
+  const [newGame, setNewGame] = useState(false)
+  const [sushiPerClick, setSushiPerClick] = useState(1)
+  const [numSushi, setNumSushi] = usePersistedState(0, 'num-sushi')
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
     {
       megaCursor: 0,
@@ -25,8 +25,8 @@ const Game = () => {
       farm: 0,
       factory: 0,
     },
-    "upgrades-owned"
-  );
+    'upgrades-owned'
+  )
   const [upgradeCost, setUpgradeCost] = usePersistedState(
     {
       megaCursor: 10,
@@ -35,140 +35,138 @@ const Game = () => {
       farm: 20000,
       factory: 500000,
     },
-    "upgrade-cost"
-  );
+    'upgrade-cost'
+  )
 
   useEffect(() => {
     if (numSushi > 0) {
-      setNewGame(false);
-    } else setNewGame(true);
-  }, [numSushi]);
+      setNewGame(false)
+    } else setNewGame(true)
+  }, [numSushi])
 
   // points (sushiPerClick) briefly appear on sushi in random spots
-  const pointsRef = useRef(null);
-  const sushiRef = useRef(null);
+  const pointsRef = useRef(null)
+  const sushiRef = useRef(null)
   const makeSushi = () => {
-    setNumSushi(numSushi + sushiPerClick);
-    let randomTop = Math.floor(Math.random() * 50) + 40;
-    let randomLeft = Math.floor(Math.random() * 50) + 100;
-    pointsRef.current.style.top = `${randomTop}px`;
-    pointsRef.current.style.left = `${randomLeft}px`;
-    pointsRef.current.style.opacity = "1";
-    sushiRef.current.style.transform = "scale(0.9)";
+    setNumSushi(numSushi + sushiPerClick)
+    let randomTop = Math.floor(Math.random() * 50) + 40
+    let randomLeft = Math.floor(Math.random() * 50) + 100
+    pointsRef.current.style.top = `${randomTop}px`
+    pointsRef.current.style.left = `${randomLeft}px`
+    pointsRef.current.style.opacity = '1'
+    sushiRef.current.style.transform = 'scale(0.9)'
     setTimeout(() => {
-      pointsRef.current.style.opacity = "0";
-      sushiRef.current.style.transform = "scale(1)";
-    }, 100);
-  };
+      pointsRef.current.style.opacity = '0'
+      sushiRef.current.style.transform = 'scale(1)'
+    }, 100)
+  }
 
-  const buyUpgrade = (item) => {
-    if (item.id === "megaCursor") {
-      setNumSushi(numSushi - upgradeCost[item.id]);
-      setSushiPerClick(sushiPerClick + item.value);
+  const buyUpgrade = item => {
+    if (item.id === 'megaCursor') {
+      setNumSushi(numSushi - upgradeCost[item.id])
+      setSushiPerClick(sushiPerClick + item.value)
       setUpgradesOwned({
         // use spread operator to prevent overwriting other state values
         ...upgradesOwned,
         [item.id]: upgradesOwned[item.id] + 1,
-      });
+      })
       setUpgradeCost({
         ...upgradeCost,
         [item.id]: Math.floor(upgradeCost[item.id] * 1.25),
-      });
+      })
     } else {
-      setNumSushi(numSushi - upgradeCost[item.id]);
+      setNumSushi(numSushi - upgradeCost[item.id])
       setUpgradesOwned({
         ...upgradesOwned,
         [item.id]: upgradesOwned[item.id] + 1,
-      });
+      })
       setUpgradeCost({
         ...upgradeCost,
         [item.id]: Math.floor(upgradeCost[item.id] * 1.25),
-      });
+      })
     }
-  };
+  }
 
-  const calcSushiPerSec = (upgradesOwned) => {
-    let num = 0;
+  const calcSushiPerSec = upgradesOwned => {
+    let num = 0
     num =
-      1 * upgradesOwned["autoCursor"] +
-      10 * upgradesOwned["jiro"] +
-      80 * upgradesOwned["farm"] +
-      150 * upgradesOwned["factory"];
-    return num;
-  };
+      1 * upgradesOwned['autoCursor'] +
+      10 * upgradesOwned['jiro'] +
+      80 * upgradesOwned['farm'] +
+      150 * upgradesOwned['factory']
+    return num
+  }
 
-  const sushiPerSec = calcSushiPerSec(upgradesOwned);
+  const sushiPerSec = calcSushiPerSec(upgradesOwned)
 
   useEffect(() => {
-    setSushiPerClick(3 * upgradesOwned["megaCursor"] + 1);
-  }, [upgradesOwned]);
+    setSushiPerClick(3 * upgradesOwned['megaCursor'] + 1)
+  }, [upgradesOwned])
 
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    setNumSushi(numSushi + sushiPerSec);
+    setNumSushi(numSushi + sushiPerSec)
     // stores the number of milliseconds since midnight 1/1/1970
-    localStorage.setItem("timer", new Date().getTime());
-  }, 1000);
+    localStorage.setItem('timer', new Date().getTime())
+  }, 1000)
 
   useEffect(() => {
-    let timer = localStorage.getItem("timer");
-    let timeElapsed = new Date().getTime() - timer;
-    timeElapsed = Math.floor(timeElapsed / 1000);
-    const sushiEarned = sushiPerSec * timeElapsed;
-    setNumSushi(numSushi + sushiEarned);
-  }, [sushiPerSec, numSushi, setNumSushi]);
+    let timer = localStorage.getItem('timer')
+    let timeElapsed = new Date().getTime() - timer
+    timeElapsed = Math.floor(timeElapsed / 1000)
+    const sushiEarned = sushiPerSec * timeElapsed
+    setNumSushi(numSushi + sushiEarned)
+  }, [sushiPerSec, numSushi, setNumSushi])
 
   // shorten display number of sushi when over threshold
-  let displayNum = numSushi;
-  const compactDisplayNum = (num) => {
+  let displayNum = numSushi
+  const compactDisplayNum = num => {
     if (num >= 1000000000000) {
-      displayNum = (numSushi / 1000000000000).toFixed(1) + "t"; // trillions
+      displayNum = (numSushi / 1000000000000).toFixed(1) + 't' // trillions
     } else if (num >= 1000000000) {
-      displayNum = (numSushi / 1000000000).toFixed(1) + "b"; // billions
+      displayNum = (numSushi / 1000000000).toFixed(1) + 'b' // billions
     } else if (num >= 1000000) {
-      displayNum = (numSushi / 1000000).toFixed(1) + "m"; // millions
+      displayNum = (numSushi / 1000000).toFixed(1) + 'm' // millions
     } else if (num >= 1000) {
-      displayNum = (numSushi / 1000).toFixed(1) + "k"; // thousands
+      displayNum = (numSushi / 1000).toFixed(1) + 'k' // thousands
     }
-  };
-  compactDisplayNum(numSushi);
+  }
+  compactDisplayNum(numSushi)
 
   const handleReset = () => {
     if (
-      window.confirm(
-        "Are you sure you want to reset the game? You will lose all your progress!"
-      )
+      window.confirm('Are you sure you want to reset the game? You will lose all your progress!')
     ) {
-      localStorage.clear();
-      setSushiPerClick(1);
-      setNumSushi(0);
+      localStorage.clear()
+      setSushiPerClick(1)
+      setNumSushi(0)
       setUpgradeCost({
         megaCursor: 10,
         autoCursor: 100,
         jiro: 1500,
         farm: 20000,
         factory: 500000,
-      });
+      })
       setUpgradesOwned({
         megaCursor: 0,
         autoCursor: 0,
         jiro: 0,
         farm: 0,
         factory: 0,
-      });
+      })
     }
-  };
+  }
 
   // calling the custom hooks
-  useDocumentTitle(`Sushi Heaven - ${displayNum} sushi`, "Sushi Heaven");
-  useKeyUp("Space", makeSushi);
+  useDocumentTitle(`Sushi Heaven - ${displayNum} sushi`, 'Sushi Heaven')
+  useKeyUp('Space', makeSushi)
 
   return (
     <Wrapper>
       <GameArea>
         <Instructions newGame={newGame}>
           Click me or tap the spacebar to make sushi!
-          <span className="arrow" />
+          <span className='arrow' />
         </Instructions>
         <GameButton onClick={makeSushi}>
           <Points ref={pointsRef}>+{sushiPerClick}</Points>
@@ -177,21 +175,21 @@ const Game = () => {
       </GameArea>
       <Factory>
         <Actions>
-          <Link to="/" className="action">
-            <span className="icon">
+          <Link to='/' className='action'>
+            <span className='icon'>
               <RiHomeHeartLine />
             </span>
             Home
           </Link>
-          <button className="action" onClick={handleReset}>
-            <span className="icon">
+          <button className='action' onClick={handleReset}>
+            <span className='icon'>
               <IoReloadCircleOutline />
             </span>
             Reset
           </button>
         </Actions>
         <Indicator>
-          <Total className={numSushi === 0 && "none"}>{displayNum} sushi</Total>
+          <Total className={numSushi === 0 && 'none'}>{displayNum} sushi</Total>
           <p>
             <strong>+{sushiPerSec}</strong> per second
           </p>
@@ -202,9 +200,9 @@ const Game = () => {
         <SectionTitle>Upgrades</SectionTitle>
         <Upgrades>
           {upgrades.map((item, i) => {
-            let available = false;
+            let available = false
             if (numSushi >= upgradeCost[item.id]) {
-              available = true;
+              available = true
             }
             return (
               <Item
@@ -215,13 +213,13 @@ const Game = () => {
                 numOwned={upgradesOwned[item.id]}
                 buyUpgrade={() => buyUpgrade(item)}
               />
-            );
+            )
           })}
         </Upgrades>
       </Factory>
     </Wrapper>
-  );
-};
+  )
+}
 
 const Wrapper = styled.div`
   display: flex;
@@ -232,16 +230,16 @@ const Wrapper = styled.div`
   @media only screen and (min-width: 800px) {
     flex-direction: row;
   }
-`;
+`
 
 const GameArea = styled.div`
   display: grid;
   place-content: center;
-`;
+`
 
 const Instructions = styled.div`
-  visibility: ${(props) => (props.newGame ? "visible" : "hidden")};
-  opacity: ${(props) => (props.newGame ? "1" : "0")};
+  visibility: ${props => (props.newGame ? 'visible' : 'hidden')};
+  opacity: ${props => (props.newGame ? '1' : '0')};
   transition: 0.2s ease-in-out;
   background: rgba(255, 255, 255, 0.7);
   border: 5px solid #fff;
@@ -251,10 +249,8 @@ const Instructions = styled.div`
   margin: auto;
   text-align: center;
   position: relative;
-  animation: ${(props) =>
-    props.newGame
-      ? "bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98)"
-      : "none"};
+  animation: ${props =>
+    props.newGame ? 'bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98)' : 'none'};
   .arrow {
     background: #fff;
     height: 7px;
@@ -272,7 +268,7 @@ const Instructions = styled.div`
       transform: translateY(-15px);
     }
   }
-`;
+`
 
 const GameButton = styled.button`
   border: none;
@@ -283,7 +279,7 @@ const GameButton = styled.button`
   &:focus {
     outline: none;
   }
-`;
+`
 
 const Points = styled.p`
   color: #fff;
@@ -301,12 +297,12 @@ const Points = styled.p`
   -ms-user-select: none;
   user-select: none;
   cursor: pointer;
-`;
+`
 
 const Sushi = styled.img`
   width: 300px;
   transition: 0.2s ease-in-out;
-`;
+`
 
 const Factory = styled.div`
   display: flex;
@@ -322,7 +318,7 @@ const Factory = styled.div`
   @media only screen and (min-width: 800px) {
     margin: 30px;
   }
-`;
+`
 
 const Actions = styled.div`
   display: flex;
@@ -331,7 +327,7 @@ const Actions = styled.div`
   border-bottom: 6px solid white;
   .action {
     background: #f2f2f2;
-    font-family: "Raleway", sans-serif;
+    font-family: 'Raleway', sans-serif;
     font-weight: bold;
     font-size: 0.9rem;
     color: #999;
@@ -358,7 +354,7 @@ const Actions = styled.div`
       color: white;
     }
   }
-`;
+`
 
 const Indicator = styled.div`
   text-align: center;
@@ -370,7 +366,7 @@ const Indicator = styled.div`
       color: #373737;
     }
   }
-`;
+`
 
 const Total = styled.h3`
   font-size: 2rem;
@@ -380,7 +376,7 @@ const Total = styled.h3`
   &.none {
     color: #999;
   }
-`;
+`
 
 const SectionTitle = styled.h3`
   color: #1a1a1a;
@@ -390,10 +386,8 @@ const SectionTitle = styled.h3`
   width: 100%;
   padding: 10px 0;
   border-bottom: 2px solid #e6e6e6;
-`;
+`
 
 const Upgrades = styled.div`
   width: 100%;
-`;
-
-export default Game;
+`
