@@ -2,12 +2,20 @@ import React, { useRef } from 'react'
 import styled from 'styled-components/macro'
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 
-export const Item = ({ item, type, cost, currency, available, numOwned, buyUpgrade }) => {
+import cart from '../assets/cart.svg'
+import truck from '../assets/truck.svg'
+import bar from '../assets/bar.svg'
+import restaurant from '../assets/restaurant.svg'
+import franchise from '../assets/franchise.svg'
+
+export const Item = ({ item, type, cost, currency, available, numOwned, purchase }) => {
+  const restaurantIcons = { cart, truck, bar, restaurant, franchise }
+
   const upgrade = useRef(null)
 
   const itemUse = () => {
     if (type === 'restaurant') {
-      return `Sells ${item.value} sushi per second.`
+      return `Sells ${item.value} sushi per click.`
     } else if (item.id === 'megaCursor') {
       return `Increases sushi per click by ${item.value}.`
     } else {
@@ -18,11 +26,14 @@ export const Item = ({ item, type, cost, currency, available, numOwned, buyUpgra
   return (
     <Wrapper id={item.id} ref={upgrade}>
       <ItemDetails>
-        <Name>{item.name}</Name>
+        <div className='header'>
+          {type === 'restaurant' && <img src={restaurantIcons[item.id]} alt='' />}
+          <Name>{item.name}</Name>
+        </div>
         <div className='purchase'>
           <BuyBtn
             className={type === 'restaurant' && 'coin'}
-            onClick={buyUpgrade}
+            onClick={purchase}
             disabled={!available}>
             Buy
           </BuyBtn>
@@ -61,13 +72,21 @@ const Wrapper = styled.div`
 
 const ItemDetails = styled.div`
   text-align: left;
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    img {
+      height: 25px;
+      margin-right: 10px;
+    }
+  }
 `
 
 const Name = styled.p`
   font-family: 'Merienda', cursive;
   font-weight: bold;
   font-size: 1.2rem;
-  margin-bottom: 10px;
 `
 
 const BuyBtn = styled.button`

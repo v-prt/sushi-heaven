@@ -10,9 +10,11 @@ import { usePersistedState } from '../hooks/use-persisted-state.hook'
 import sushiImage from '../assets/sushi.png'
 import sushiIcon from '../assets/sushi.svg'
 import moneyIcon from '../assets/money.svg'
+
 import { RiHomeHeartLine } from 'react-icons/ri'
 import { IoReloadCircleOutline } from 'react-icons/io5'
 import { Item } from './Item'
+import { Restaurant } from './Restaurant'
 import { upgrades, restaurants } from '../data'
 
 export const Game = () => {
@@ -20,8 +22,9 @@ export const Game = () => {
   const [viewUpgrades, setViewUpgrades] = useState(true)
   const [viewRestaurants, setViewRestaurants] = useState(false)
   const [sushiPerClick, setSushiPerClick] = useState(1)
-  const [sushi, setSushi] = usePersistedState(0, 'num-sushi')
+  const [sushi, setSushi] = usePersistedState(0, 'sushi')
   const [money, setMoney] = usePersistedState(0, 'money')
+  const [timeElapsed, setTimeElapsed] = useState(0)
 
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
     {
@@ -49,7 +52,7 @@ export const Game = () => {
       truck: 0,
       bar: 0,
       restaurant: 0,
-      chain: 0,
+      franchise: 0,
     },
     'restaurants-owned'
   )
@@ -59,7 +62,7 @@ export const Game = () => {
       truck: 10000,
       bar: 25000,
       restaurant: 75000,
-      chain: 2250000,
+      franchise: 2250000,
     },
     'restaurant-cost'
   )
@@ -147,71 +150,25 @@ export const Game = () => {
     })
   }
 
-  // CALCULATE SALES RATE BASED ON RESTAURANTS OWNED
-  const calcSalesRate = restaurantsOwned => {
-    let num = 0
-    num =
-      1 * restaurantsOwned['cart'] +
-      5 * restaurantsOwned['truck'] +
-      20 * restaurantsOwned['bar'] +
-      100 * restaurantsOwned['restaurant'] +
-      750 * restaurantsOwned['chain']
-    return num
-  }
-  const salesRate = calcSalesRate(restaurantsOwned)
+  // SET TIME ELAPSED WHILE GAME CLOSED
+  useEffect(() => {
+    let timer = localStorage.getItem('timer')
+    let timeElapsed = new Date().getTime() - timer
+    timeElapsed = Math.floor(timeElapsed / 1000)
+    setTimeElapsed(timeElapsed)
+  }, [])
 
-  // INCREASE/DECREASE SUSHI & MONEY EACH SECOND BASED ON PRODUCTION & SALES RATES
+  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH SECOND BASED ON PRODUCTION RATE
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    if (sushi > 0 && salesRate > 0) {
-      setSushi(sushi + productionRate - salesRate)
-      setMoney(money + salesRate)
-    } else {
-      setSushi(sushi + productionRate)
-    }
+    if (timeElapsed > 0) {
+      let sushiProduced = productionRate * timeElapsed
+      setSushi(sushi + sushiProduced)
+      setTimeElapsed(0)
+    } else setSushi(sushi + productionRate)
     // stores the number of milliseconds since midnight 1/1/1970
     localStorage.setItem('timer', new Date().getTime())
   }, 1000)
-
-  // FIXME:
-  // INCREASE/DECREASE SUSHI & MONEY BASED ON TIME ELAPSED SINCE LAST LOAD
-  // 1. should only trigger once on load
-  // 2. get time elapsed from timer in local storage (seconds)
-  // 3. calculate sushi produced since last load
-  // 4. calculate sushi sold (and money earned) since last load
-  // 5. add sushi/money to value stored in local storage
-  //
-  // useEffect(() => {
-  //   let timer = localStorage.getItem('timer')
-  //   if (timer) {
-  //     let timeElapsed = new Date().getTime() - timer
-  //     timeElapsed = Math.floor(timeElapsed / 1000)
-  //     const sushiProduced = productionRate * timeElapsed
-  //     const sushiSold = salesRate * timeElapsed
-  //     console.log('sushi per sec: ', productionRate)
-  //     console.log('money per sec: ', salesRate)
-  //     console.log('num sushi: ', sushi)
-  //     console.log('time elapsed: ', timeElapsed)
-  //     console.log('sushi earned: ', sushiProduced)
-  //     console.log('sushi sold: ', sushiSold)
-  //     if (sushi > 0) {
-  //       if (salesRate > 0) {
-  //         setSushi(sushi + sushiProduced - sushiSold)
-  //         setMoney(money + sushiSold)
-  //       } else {
-  //         setSushi(sushi + sushiProduced)
-  //       }
-  //     }
-  //   }
-  // }, [money, productionRate, salesRate, setMoney, setSushi, sushi])
-
-  // useEffect(() => {
-  // let timer = localStorage.getItem('timer')
-  // let timeElapsed = new Date().getTime() - timer
-  // timeElapsed = Math.floor(timeElapsed / 1000)
-  // const sushiProduced = productionRate * timeElapsed
-  // setSushi(sushi + sushiProduced)
-  // }, [productionRate, sushi, setSushi])
 
   // COMPACT DISPLAY NUM
   let displayNum = sushi
@@ -227,6 +184,12 @@ export const Game = () => {
     }
   }
   compactDisplayNum(sushi)
+
+  const handleSell = restaurant => {
+    let amount = restaurant.value * restaurantsOwned[restaurant.id]
+    setSushi(sushi - amount)
+    setMoney(money + amount)
+  }
 
   // RESET THE GAME
   const handleReset = () => {
@@ -256,14 +219,14 @@ export const Game = () => {
         truck: 10000,
         bar: 25000,
         restaurant: 75000,
-        chain: 2250000,
+        franchise: 2250000,
       })
       setRestaurantsOwned({
         cart: 1,
         truck: 0,
         bar: 0,
         restaurant: 0,
-        chain: 0,
+        franchise: 0,
       })
     }
   }
@@ -284,6 +247,18 @@ export const Game = () => {
           <Sushi src={sushiImage} ref={sushiRef} />
         </Produce>
       </ProductionArea>
+      <Restaurants>
+        {restaurants.map(item => {
+          return (
+            <Restaurant
+              item={item}
+              numOwned={restaurantsOwned[item.id]}
+              ready={sushi >= item.value}
+              handleSell={handleSell}
+            />
+          )
+        })}
+      </Restaurants>
       <Console>
         <div className='inner'>
           <Actions>
@@ -321,10 +296,7 @@ export const Game = () => {
                 <Total className={`money ${money === 0 && 'none'}`}>{money}</Total>
               </div>
               <div className='stats'>
-                <p>
-                  <strong>{salesRate}</strong> {salesRate === 1 ? 'sale' : 'sales'} per second
-                </p>
-                <p className='info-text'>(must have sushi in stock)</p>
+                <p className='info-text'>(earn money by fulfilling orders)</p>
               </div>
             </div>
           </Overview>
@@ -360,7 +332,7 @@ export const Game = () => {
                   cost={upgradeCost[item.id].toLocaleString()}
                   available={available}
                   numOwned={upgradesOwned[item.id]}
-                  buyUpgrade={() => buyUpgrade(item)}
+                  purchase={() => buyUpgrade(item)}
                 />
               )
             })}
@@ -380,7 +352,7 @@ export const Game = () => {
                   cost={restaurantCost[item.id].toLocaleString()}
                   available={available}
                   numOwned={restaurantsOwned[item.id]}
-                  buyRestaurant={() => buyRestaurant(item)}
+                  purchase={() => buyRestaurant(item)}
                 />
               )
             })}
@@ -402,11 +374,25 @@ const Wrapper = styled.div`
   }
 `
 
-const ProductionArea = styled.div`
+const ProductionArea = styled.section`
   width: 100%;
-  min-height: 100vh;
-  display: grid;
-  place-content: center;
+  /* min-height: 100vh; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+const Restaurants = styled.section`
+  /* TODO: improve mobile/tablet layout */
+  background: pink;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
 `
 
 const Instructions = styled.div`
@@ -418,7 +404,6 @@ const Instructions = styled.div`
   border-radius: 5px;
   padding: 20px;
   width: 250px;
-  margin: auto;
   text-align: center;
   position: relative;
   animation: ${props =>
