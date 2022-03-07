@@ -14,7 +14,7 @@ export const Restaurant = ({ item, numOwned, ready, handleSell }) => {
 
   return (
     <Wrapper key={item.id} owned={numOwned > 0}>
-      <Alert onClick={() => handleSell(item)} ready={ready}>
+      <Alert onClick={() => handleSell(item)} ready={ready && numOwned > 0}>
         <img src={chopsticks} alt='' />
         <span className='arrow' />
       </Alert>
