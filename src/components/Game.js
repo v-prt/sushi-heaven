@@ -7,7 +7,7 @@ import { useDocumentTitle } from '../hooks/use-document-title.hook'
 import { useKeyUp } from '../hooks/use-key-up.hook'
 import { usePersistedState } from '../hooks/use-persisted-state.hook'
 
-import sushi from '../assets/sushi.png'
+import sushiImage from '../assets/sushi.png'
 import sushiIcon from '../assets/sushi.svg'
 import moneyIcon from '../assets/money.svg'
 import { RiHomeHeartLine } from 'react-icons/ri'
@@ -17,11 +17,11 @@ import { upgrades, restaurants } from '../data'
 
 export const Game = () => {
   const [newGame, setNewGame] = useState(false)
-  const [sushiPerClick, setSushiPerClick] = useState(1)
-  const [numSushi, setNumSushi] = usePersistedState(0, 'num-sushi')
-  const [money, setMoney] = usePersistedState(0, 'money')
   const [viewUpgrades, setViewUpgrades] = useState(true)
   const [viewRestaurants, setViewRestaurants] = useState(false)
+  const [sushiPerClick, setSushiPerClick] = useState(1)
+  const [sushi, setSushi] = usePersistedState(0, 'num-sushi')
+  const [money, setMoney] = usePersistedState(0, 'money')
 
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
     {
@@ -45,7 +45,7 @@ export const Game = () => {
   )
   const [restaurantsOwned, setRestaurantsOwned] = usePersistedState(
     {
-      cart: 0,
+      cart: 1,
       truck: 0,
       bar: 0,
       restaurant: 0,
@@ -66,10 +66,10 @@ export const Game = () => {
 
   // SETS NEW GAME BASED ON SUSHI STOCK
   useEffect(() => {
-    if (numSushi > 0) {
+    if (sushi > 0) {
       setNewGame(false)
     } else setNewGame(true)
-  }, [numSushi])
+  }, [sushi])
 
   // SETS SUSHI PER CLICK
   useEffect(() => {
@@ -80,7 +80,7 @@ export const Game = () => {
   const pointsRef = useRef(null)
   const sushiRef = useRef(null)
   const makeSushi = () => {
-    setNumSushi(numSushi + sushiPerClick)
+    setSushi(sushi + sushiPerClick)
     let randomTop = Math.floor(Math.random() * 50) + 40
     let randomLeft = Math.floor(Math.random() * 50) + 100
     pointsRef.current.style.top = `${randomTop}px`
@@ -97,7 +97,7 @@ export const Game = () => {
   // subtract sushi, increase sushi per click, increase num upgrades owned & cost
   const buyUpgrade = item => {
     if (item.id === 'megaCursor') {
-      setNumSushi(numSushi - upgradeCost[item.id])
+      setSushi(sushi - upgradeCost[item.id])
       setSushiPerClick(sushiPerClick + item.value)
       setUpgradesOwned({
         // use spread operator to prevent overwriting other state values
@@ -109,7 +109,7 @@ export const Game = () => {
         [item.id]: Math.floor(upgradeCost[item.id] * 1.25),
       })
     } else {
-      setNumSushi(numSushi - upgradeCost[item.id])
+      setSushi(sushi - upgradeCost[item.id])
       setUpgradesOwned({
         ...upgradesOwned,
         [item.id]: upgradesOwned[item.id] + 1,
@@ -163,11 +163,11 @@ export const Game = () => {
   // INCREASE/DECREASE SUSHI & MONEY EACH SECOND BASED ON PRODUCTION & SALES RATES
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    if (numSushi > 0 && salesRate > 0) {
-      setNumSushi(numSushi + productionRate - salesRate)
+    if (sushi > 0 && salesRate > 0) {
+      setSushi(sushi + productionRate - salesRate)
       setMoney(money + salesRate)
     } else {
-      setNumSushi(numSushi + productionRate)
+      setSushi(sushi + productionRate)
     }
     // stores the number of milliseconds since midnight 1/1/1970
     localStorage.setItem('timer', new Date().getTime())
@@ -181,6 +181,7 @@ export const Game = () => {
   // 4. calculate sushi sold (and money earned) since last load
   // 5. add sushi/money to value stored in local storage
   //
+  // useEffect(() => {
   //   let timer = localStorage.getItem('timer')
   //   if (timer) {
   //     let timeElapsed = new Date().getTime() - timer
@@ -189,42 +190,43 @@ export const Game = () => {
   //     const sushiSold = salesRate * timeElapsed
   //     console.log('sushi per sec: ', productionRate)
   //     console.log('money per sec: ', salesRate)
-  //     console.log('num sushi: ', numSushi)
+  //     console.log('num sushi: ', sushi)
   //     console.log('time elapsed: ', timeElapsed)
   //     console.log('sushi earned: ', sushiProduced)
   //     console.log('sushi sold: ', sushiSold)
-  //     // if (numSushi > 0) {
-  //     //   if (salesRate > 0) {
-  //     setNumSushi(numSushi + sushiProduced - sushiSold)
-  //     setMoney(money + sushiSold)
-  //     // } else {
-  //     //   setNumSushi(numSushi + sushiProduced)
-  //     // }
-  //     // }
+  //     if (sushi > 0) {
+  //       if (salesRate > 0) {
+  //         setSushi(sushi + sushiProduced - sushiSold)
+  //         setMoney(money + sushiSold)
+  //       } else {
+  //         setSushi(sushi + sushiProduced)
+  //       }
+  //     }
   //   }
+  // }, [money, productionRate, salesRate, setMoney, setSushi, sushi])
 
   // useEffect(() => {
-  //   let timer = localStorage.getItem('timer')
-  //   let timeElapsed = new Date().getTime() - timer
-  //   timeElapsed = Math.floor(timeElapsed / 1000)
-  //   const sushiProduced = productionRate * timeElapsed
-  //   setNumSushi(numSushi + sushiProduced)
-  // }, [productionRate, numSushi, setNumSushi])
+  // let timer = localStorage.getItem('timer')
+  // let timeElapsed = new Date().getTime() - timer
+  // timeElapsed = Math.floor(timeElapsed / 1000)
+  // const sushiProduced = productionRate * timeElapsed
+  // setSushi(sushi + sushiProduced)
+  // }, [productionRate, sushi, setSushi])
 
   // COMPACT DISPLAY NUM
-  let displayNum = numSushi
+  let displayNum = sushi
   const compactDisplayNum = num => {
     if (num >= 1000000000000) {
-      displayNum = (numSushi / 1000000000000).toFixed(2) + 't' // trillions
+      displayNum = (sushi / 1000000000000).toFixed(2) + 't' // trillions
     } else if (num >= 1000000000) {
-      displayNum = (numSushi / 1000000000).toFixed(2) + 'b' // billions
+      displayNum = (sushi / 1000000000).toFixed(2) + 'b' // billions
     } else if (num >= 1000000) {
-      displayNum = (numSushi / 1000000).toFixed(2) + 'm' // millions
+      displayNum = (sushi / 1000000).toFixed(2) + 'm' // millions
     } else if (num >= 1000) {
-      displayNum = (numSushi / 1000).toFixed(2) + 'k' // thousands
+      displayNum = (sushi / 1000).toFixed(2) + 'k' // thousands
     }
   }
-  compactDisplayNum(numSushi)
+  compactDisplayNum(sushi)
 
   // RESET THE GAME
   const handleReset = () => {
@@ -233,7 +235,7 @@ export const Game = () => {
     ) {
       localStorage.clear()
       setSushiPerClick(1)
-      setNumSushi(0)
+      setSushi(0)
       setMoney(0)
       setUpgradeCost({
         megaCursor: 10,
@@ -257,7 +259,7 @@ export const Game = () => {
         chain: 2250000,
       })
       setRestaurantsOwned({
-        cart: 0,
+        cart: 1,
         truck: 0,
         bar: 0,
         restaurant: 0,
@@ -279,7 +281,7 @@ export const Game = () => {
         </Instructions>
         <Produce onClick={makeSushi}>
           <Points ref={pointsRef}>+{sushiPerClick}</Points>
-          <Sushi src={sushi} ref={sushiRef} />
+          <Sushi src={sushiImage} ref={sushiRef} />
         </Produce>
       </ProductionArea>
       <Console>
@@ -302,7 +304,7 @@ export const Game = () => {
             <div className='sushi-info'>
               <div className='row'>
                 <img src={sushiIcon} alt='sushi' />
-                <Total className={numSushi === 0 && 'none'}>{displayNum}</Total>
+                <Total className={sushi === 0 && 'none'}>{displayNum}</Total>
               </div>
               <div className='stats'>
                 <p>
@@ -347,7 +349,7 @@ export const Game = () => {
           <Menu expand={viewUpgrades}>
             {upgrades.map((item, i) => {
               let available = false
-              if (numSushi >= upgradeCost[item.id]) {
+              if (sushi >= upgradeCost[item.id]) {
                 available = true
               }
               return (
