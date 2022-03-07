@@ -371,7 +371,7 @@ const Wrapper = styled.div`
   min-width: 100vw;
   @media only screen and (min-width: 800px) {
     flex-direction: row;
-    align-items: flex-end;
+    /* align-items: flex-end; */
   }
 `
 
