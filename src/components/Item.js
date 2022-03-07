@@ -84,14 +84,15 @@ const BuyBtn = styled.button`
   &.coin {
     background: gold;
   }
+  &:not(:active) {
+    box-shadow: -2px 2px 0 #666;
+    transform: translate(0.25em, -0.25em);
+  }
   &:disabled {
     background: #e6e6e6;
+    box-shadow: none;
+    transform: none;
     pointer-events: none;
-  }
-  &:hover:not(:active) {
-    box-shadow: -2px 2px 0 #333;
-    transform: translate(0.25em, -0.25em);
-    outline: none;
   }
 `
 

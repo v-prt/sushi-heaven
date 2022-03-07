@@ -45,7 +45,9 @@ export const Game = () => {
   )
   const [restaurantsOwned, setRestaurantsOwned] = usePersistedState(
     {
-      bar: 1,
+      cart: 0,
+      truck: 0,
+      bar: 0,
       restaurant: 0,
       chain: 0,
     },
@@ -53,20 +55,28 @@ export const Game = () => {
   )
   const [restaurantCost, setRestaurantCost] = usePersistedState(
     {
-      bar: 10000,
+      cart: 5000,
+      truck: 10000,
+      bar: 25000,
       restaurant: 75000,
       chain: 2250000,
     },
     'restaurant-cost'
   )
 
+  // SETS NEW GAME BASED ON SUSHI STOCK
   useEffect(() => {
     if (numSushi > 0) {
       setNewGame(false)
     } else setNewGame(true)
   }, [numSushi])
 
-  // points (sushiPerClick) briefly appear on sushi in random spots
+  // SETS SUSHI PER CLICK
+  useEffect(() => {
+    setSushiPerClick(3 * upgradesOwned['megaCursor'] + 1)
+  }, [upgradesOwned])
+
+  // CREATES A POINT GENERATION EFFECT & SUSHI TRANSFORMATION ON CLICK
   const pointsRef = useRef(null)
   const sushiRef = useRef(null)
   const makeSushi = () => {
@@ -83,6 +93,8 @@ export const Game = () => {
     }, 100)
   }
 
+  // BUY UPGRADE
+  // subtract sushi, increase sushi per click, increase num upgrades owned & cost
   const buyUpgrade = item => {
     if (item.id === 'megaCursor') {
       setNumSushi(numSushi - upgradeCost[item.id])
@@ -109,7 +121,8 @@ export const Game = () => {
     }
   }
 
-  const calcSushiPerSec = upgradesOwned => {
+  // CALCULATE PRODUCTION RATE
+  const calcProductionRate = upgradesOwned => {
     let num = 0
     num =
       1 * upgradesOwned['autoCursor'] +
@@ -118,12 +131,10 @@ export const Game = () => {
       150 * upgradesOwned['factory']
     return num
   }
-  const sushiPerSec = calcSushiPerSec(upgradesOwned)
+  const productionRate = calcProductionRate(upgradesOwned)
 
-  useEffect(() => {
-    setSushiPerClick(3 * upgradesOwned['megaCursor'] + 1)
-  }, [upgradesOwned])
-
+  // BUY RESTAURANT
+  // subtract money, increase num restaurants owned & cost
   const buyRestaurant = item => {
     setMoney(money - restaurantCost[item.id])
     setRestaurantsOwned({
@@ -136,37 +147,71 @@ export const Game = () => {
     })
   }
 
-  const calcMoneyPerSec = restaurantsOwned => {
+  // CALCULATE SALES RATE BASED ON RESTAURANTS OWNED
+  const calcSalesRate = restaurantsOwned => {
     let num = 0
     num =
-      1 * restaurantsOwned['bar'] +
+      1 * restaurantsOwned['cart'] +
+      5 * restaurantsOwned['truck'] +
+      20 * restaurantsOwned['bar'] +
       100 * restaurantsOwned['restaurant'] +
       750 * restaurantsOwned['chain']
-    return num / 2
+    return num
   }
-  const moneyPerSec = calcMoneyPerSec(restaurantsOwned)
+  const salesRate = calcSalesRate(restaurantsOwned)
 
+  // INCREASE/DECREASE SUSHI & MONEY EACH SECOND BASED ON PRODUCTION & SALES RATES
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
-    if (numSushi > 0) {
-      setNumSushi(numSushi + sushiPerSec - moneyPerSec * 2)
-    }
-    if (numSushi > 0) {
-      setMoney(money + moneyPerSec)
+    if (numSushi > 0 && salesRate > 0) {
+      setNumSushi(numSushi + productionRate - salesRate)
+      setMoney(money + salesRate)
+    } else {
+      setNumSushi(numSushi + productionRate)
     }
     // stores the number of milliseconds since midnight 1/1/1970
     localStorage.setItem('timer', new Date().getTime())
   }, 1000)
 
-  useEffect(() => {
-    let timer = localStorage.getItem('timer')
-    let timeElapsed = new Date().getTime() - timer
-    timeElapsed = Math.floor(timeElapsed / 1000)
-    const sushiEarned = sushiPerSec * timeElapsed
-    setNumSushi(numSushi + sushiEarned)
-  }, [sushiPerSec, numSushi, setNumSushi])
+  // FIXME:
+  // INCREASE/DECREASE SUSHI & MONEY BASED ON TIME ELAPSED SINCE LAST LOAD
+  // 1. should only trigger once on load
+  // 2. get time elapsed from timer in local storage (seconds)
+  // 3. calculate sushi produced since last load
+  // 4. calculate sushi sold (and money earned) since last load
+  // 5. add sushi/money to value stored in local storage
+  //
+  //   let timer = localStorage.getItem('timer')
+  //   if (timer) {
+  //     let timeElapsed = new Date().getTime() - timer
+  //     timeElapsed = Math.floor(timeElapsed / 1000)
+  //     const sushiProduced = productionRate * timeElapsed
+  //     const sushiSold = salesRate * timeElapsed
+  //     console.log('sushi per sec: ', productionRate)
+  //     console.log('money per sec: ', salesRate)
+  //     console.log('num sushi: ', numSushi)
+  //     console.log('time elapsed: ', timeElapsed)
+  //     console.log('sushi earned: ', sushiProduced)
+  //     console.log('sushi sold: ', sushiSold)
+  //     // if (numSushi > 0) {
+  //     //   if (salesRate > 0) {
+  //     setNumSushi(numSushi + sushiProduced - sushiSold)
+  //     setMoney(money + sushiSold)
+  //     // } else {
+  //     //   setNumSushi(numSushi + sushiProduced)
+  //     // }
+  //     // }
+  //   }
 
-  // shorten display number of sushi when over threshold
+  // useEffect(() => {
+  //   let timer = localStorage.getItem('timer')
+  //   let timeElapsed = new Date().getTime() - timer
+  //   timeElapsed = Math.floor(timeElapsed / 1000)
+  //   const sushiProduced = productionRate * timeElapsed
+  //   setNumSushi(numSushi + sushiProduced)
+  // }, [productionRate, numSushi, setNumSushi])
+
+  // COMPACT DISPLAY NUM
   let displayNum = numSushi
   const compactDisplayNum = num => {
     if (num >= 1000000000000) {
@@ -181,6 +226,7 @@ export const Game = () => {
   }
   compactDisplayNum(numSushi)
 
+  // RESET THE GAME
   const handleReset = () => {
     if (
       window.confirm('Are you sure you want to reset the game? You will lose all your progress!')
@@ -204,19 +250,23 @@ export const Game = () => {
         factory: 0,
       })
       setRestaurantCost({
-        bar: 10000,
+        cart: 5000,
+        truck: 10000,
+        bar: 25000,
         restaurant: 75000,
         chain: 2250000,
       })
       setRestaurantsOwned({
-        bar: 1,
+        cart: 0,
+        truck: 0,
+        bar: 0,
         restaurant: 0,
         chain: 0,
       })
     }
   }
 
-  // calling the custom hooks
+  // CALLING CUSTOM HOOKS
   useDocumentTitle(`Sushi Heaven - ${displayNum} sushi`, 'Sushi Heaven')
   useKeyUp('Space', makeSushi)
 
@@ -256,22 +306,23 @@ export const Game = () => {
               </div>
               <div className='stats'>
                 <p>
-                  <strong>+{sushiPerSec}</strong> sushi per second
+                  <strong>{productionRate}</strong> produced per second
                 </p>
                 <p>
-                  <strong>+{sushiPerClick}</strong> sushi per click
+                  <strong>{sushiPerClick}</strong> produced per click
                 </p>
               </div>
             </div>
             <div className='income-info'>
               <div className='row'>
                 <img src={moneyIcon} alt='sushi' />
-                <Total className={`money ${money === 0 && 'none'}`}>{money.toFixed(2)}</Total>
+                <Total className={`money ${money === 0 && 'none'}`}>{money}</Total>
               </div>
               <div className='stats'>
                 <p>
-                  <strong>+{moneyPerSec}</strong> income per second
+                  <strong>{salesRate}</strong> {salesRate === 1 ? 'sale' : 'sales'} per second
                 </p>
+                <p className='info-text'>(must have sushi in stock)</p>
               </div>
             </div>
           </Overview>
@@ -351,7 +402,7 @@ const Wrapper = styled.div`
 
 const ProductionArea = styled.div`
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: grid;
   place-content: center;
 `
@@ -466,9 +517,7 @@ const Actions = styled.div`
       margin-right: 5px;
       font-size: 1.1rem;
     }
-    &:hover,
-    &:focus {
-      outline: none;
+    &:hover:not(:active) {
       background: #fd6743;
       color: white;
     }
@@ -494,6 +543,10 @@ const Overview = styled.div`
       color: #666;
       strong {
         color: #373737;
+      }
+      &.info-text {
+        font-size: 0.8rem;
+        color: #999;
       }
     }
   }
