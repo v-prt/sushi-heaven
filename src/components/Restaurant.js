@@ -12,54 +12,48 @@ import chopsticks from '../assets/chopsticks.svg'
 export const Restaurant = ({ item, numOwned, ready, handleSell }) => {
   const restaurantIcons = { cart, truck, bar, restaurant, franchise }
 
-  return numOwned > 0 ? (
-    <Wrapper key={item.id} numOwned={numOwned}>
+  return (
+    <Wrapper key={item.id} owned={numOwned > 0}>
       <Alert onClick={() => handleSell(item)} ready={ready}>
         <img src={chopsticks} alt='' />
         <span className='arrow' />
       </Alert>
       <img src={restaurantIcons[item.id]} alt={item.name} />
     </Wrapper>
-  ) : (
-    <></>
   )
 }
 
 const Wrapper = styled.div`
+  opacity: ${props => (props.owned ? '1' : '0.5')};
+  filter: ${props => (props.owned ? '' : 'grayscale(1)')};
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin: 20px;
+  margin: 10px;
   background: rgba(255, 255, 255, 0.5);
   padding: 10px;
   border-radius: 10px;
   flex: 1;
   position: relative;
   img {
-    height: 50px;
-    margin: 5px;
-  }
-  .name {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin: 5px;
+    height: 70px;
+    margin: 10px;
   }
 `
 
 const Alert = styled.span`
-  display: ${props => (props.ready ? 'block' : 'none')};
+  display: ${props => (props.ready ? 'flex' : 'none')};
   padding: 5px;
   background: #fff;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   position: absolute;
-  display: flex;
   align-items: center;
   font-weight: bold;
   font-size: 0.8rem;
-  left: -60px;
+  top: -70px;
   cursor: pointer;
   img {
     height: 30px;
@@ -88,7 +82,15 @@ const Alert = styled.span`
     width: 7px;
     transform: rotate(45deg);
     position: absolute;
-    right: -3px;
-    bottom: 21px;
+    bottom: -4px;
+    right: 25px;
+  }
+  @media only screen and (min-width: 800px) {
+    top: 25px;
+    left: -70px;
+    .arrow {
+      bottom: 25px;
+      right: -4px;
+    }
   }
 `

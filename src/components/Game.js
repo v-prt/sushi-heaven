@@ -371,28 +371,31 @@ const Wrapper = styled.div`
   min-width: 100vw;
   @media only screen and (min-width: 800px) {
     flex-direction: row;
+    align-items: flex-end;
   }
 `
 
 const ProductionArea = styled.section`
   width: 100%;
-  /* min-height: 100vh; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin: 40px 0;
+  @media only screen and (min-width: 800px) {
+    margin: 0;
+  }
 `
 
 const Restaurants = styled.section`
-  /* TODO: improve mobile/tablet layout */
-  background: pink;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   margin: 20px;
-  border: 5px solid rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
+  @media only screen and (min-width: 800px) {
+    flex-direction: column;
+  }
 `
 
 const Instructions = styled.div`
