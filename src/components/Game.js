@@ -356,7 +356,7 @@ export const Game = () => {
                 />
               )
             })}
-          </Menu>{' '}
+          </Menu>
         </div>
       </Console>
     </Wrapper>
