@@ -40,7 +40,7 @@ export const Item = ({ item, type, cost, currency, available, numOwned, purchase
         </div>
         <div className='purchase'>
           <BuyBtn
-            className={type === 'restaurant' && 'coin'}
+            className={type === 'restaurant' && 'coins'}
             onClick={purchase}
             disabled={!available}>
             Buy
@@ -108,7 +108,7 @@ const BuyBtn = styled.button`
   transition: 0.1s ease-in-out;
   border-radius: 5px;
   cursor: pointer;
-  &.coin {
+  &.coins {
     background: gold;
   }
   &:not(:active) {

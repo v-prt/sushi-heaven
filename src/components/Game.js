@@ -9,7 +9,7 @@ import { usePersistedState } from '../hooks/use-persisted-state.hook'
 
 import sushiImage from '../assets/sushi.svg'
 import sushiIcon from '../assets/sushi.svg'
-import moneyIcon from '../assets/coin.svg'
+import coinIcon from '../assets/coin.svg'
 
 import { RiHomeHeartLine } from 'react-icons/ri'
 import { IoReloadCircleOutline } from 'react-icons/io5'
@@ -23,7 +23,7 @@ export const Game = () => {
   const [viewRestaurants, setViewRestaurants] = useState(false)
   const [sushiPerClick, setSushiPerClick] = useState(1)
   const [sushi, setSushi] = usePersistedState(0, 'sushi')
-  const [money, setMoney] = usePersistedState(0, 'money')
+  const [coins, setCoins] = usePersistedState(0, 'coins')
   const [timeElapsed, setTimeElapsed] = useState(0)
 
   const [upgradesOwned, setUpgradesOwned] = usePersistedState(
@@ -137,9 +137,9 @@ export const Game = () => {
   const productionRate = calcProductionRate(upgradesOwned)
 
   // BUY RESTAURANT
-  // subtract money, increase num restaurants owned & cost
+  // subtract coins, increase num restaurants owned & cost
   const buyRestaurant = item => {
-    setMoney(money - restaurantCost[item.id])
+    setCoins(coins - restaurantCost[item.id])
     setRestaurantsOwned({
       ...restaurantsOwned,
       [item.id]: restaurantsOwned[item.id] + 1,
@@ -188,7 +188,7 @@ export const Game = () => {
   const handleSell = restaurant => {
     let amount = restaurant.value * restaurantsOwned[restaurant.id]
     setSushi(sushi - amount)
-    setMoney(money + amount)
+    setCoins(coins + amount)
   }
 
   // RESET THE GAME
@@ -199,7 +199,7 @@ export const Game = () => {
       localStorage.clear()
       setSushiPerClick(1)
       setSushi(0)
-      setMoney(0)
+      setCoins(0)
       setUpgradeCost({
         megaCursor: 10,
         autoCursor: 100,
@@ -292,11 +292,11 @@ export const Game = () => {
             </div>
             <div className='income-info'>
               <div className='row'>
-                <img src={moneyIcon} alt='sushi' />
-                <Total className={`money ${money === 0 && 'none'}`}>{money}</Total>
+                <img src={coinIcon} alt='sushi' />
+                <Total className={`coins ${coins === 0 && 'none'}`}>{coins}</Total>
               </div>
               <div className='stats'>
-                <p className='info-text'>(earn money by fulfilling orders)</p>
+                <p className='info-text'>(earn coins by fulfilling orders)</p>
               </div>
             </div>
           </Overview>
@@ -341,7 +341,7 @@ export const Game = () => {
           <Menu expand={viewRestaurants}>
             {restaurants.map((item, i) => {
               let available = false
-              if (money >= restaurantCost[item.id]) {
+              if (coins >= restaurantCost[item.id]) {
                 available = true
               }
               return (
@@ -547,7 +547,7 @@ const Total = styled.h3`
   font-size: 2rem;
   font-weight: bold;
   color: #ff6db6;
-  &.money {
+  &.coins {
     color: gold;
   }
   &.none {
