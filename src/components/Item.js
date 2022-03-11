@@ -2,6 +2,12 @@ import React, { useRef } from 'react'
 import styled from 'styled-components/macro'
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 
+import megaCursor from '../assets/mega-cursor.svg'
+import autoCursor from '../assets/auto-cursor.svg'
+import jiro from '../assets/jiro.svg'
+import farm from '../assets/farm.svg'
+import factory from '../assets/factory.svg'
+
 import cart from '../assets/cart.svg'
 import truck from '../assets/truck.svg'
 import bar from '../assets/bar.svg'
@@ -9,6 +15,7 @@ import restaurant from '../assets/restaurant.svg'
 import franchise from '../assets/franchise.svg'
 
 export const Item = ({ item, type, cost, currency, available, numOwned, purchase }) => {
+  const upgradeIcons = { megaCursor, autoCursor, jiro, farm, factory }
   const restaurantIcons = { cart, truck, bar, restaurant, franchise }
 
   const upgrade = useRef(null)
@@ -27,6 +34,7 @@ export const Item = ({ item, type, cost, currency, available, numOwned, purchase
     <Wrapper id={item.id} ref={upgrade}>
       <ItemDetails>
         <div className='header'>
+          {type === 'upgrade' && <img src={upgradeIcons[item.id]} alt='' />}
           {type === 'restaurant' && <img src={restaurantIcons[item.id]} alt='' />}
           <Name>{item.name}</Name>
         </div>
@@ -103,7 +111,7 @@ const BuyBtn = styled.button`
   &.coin {
     background: gold;
   }
-  &:hover:not(:active) {
+  &:not(:active) {
     box-shadow: -2px 2px 0 #333;
     transform: translate(0.25em, -0.25em);
   }

@@ -7,9 +7,9 @@ import { useDocumentTitle } from '../hooks/use-document-title.hook'
 import { useKeyUp } from '../hooks/use-key-up.hook'
 import { usePersistedState } from '../hooks/use-persisted-state.hook'
 
-import sushiImage from '../assets/sushi.png'
+import sushiImage from '../assets/sushi.svg'
 import sushiIcon from '../assets/sushi.svg'
-import moneyIcon from '../assets/money.svg'
+import moneyIcon from '../assets/coin.svg'
 
 import { RiHomeHeartLine } from 'react-icons/ri'
 import { IoReloadCircleOutline } from 'react-icons/io5'
@@ -328,6 +328,7 @@ export const Game = () => {
                 <Item
                   key={i}
                   item={item}
+                  type='upgrade'
                   currency={item.currency}
                   cost={upgradeCost[item.id].toLocaleString()}
                   available={available}

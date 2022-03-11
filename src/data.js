@@ -8,7 +8,7 @@ export const upgrades = [
 ]
 
 export const restaurants = [
-  // buy restaurants with money to sell sushi for money
+  // buy restaurants with coins to sell sushi for more coins
   { id: 'cart', name: 'Cart', currency: 'coins', cost: 5000, value: 50 },
   { id: 'truck', name: 'Truck', currency: 'coins', cost: 10000, value: 300 },
   { id: 'bar', name: 'Bar', currency: 'coins', cost: 25000, value: 1000 },
