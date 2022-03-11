@@ -79,7 +79,7 @@ export const Game = () => {
     setSushiPerClick(3 * upgradesOwned['megaCursor'] + 1)
   }, [upgradesOwned])
 
-  // CREATES A POINT GENERATION EFFECT & SUSHI TRANSFORMATION ON CLICK
+  // MAKES SUSHI, CREATES A POINT GENERATION EFFECT & SUSHI TRANSFORMATION ON CLICK
   const pointsRef = useRef(null)
   const sushiRef = useRef(null)
   const makeSushi = () => {
@@ -185,7 +185,8 @@ export const Game = () => {
   }
   compactDisplayNum(sushi)
 
-  const handleSell = restaurant => {
+  // SELLS SUSHI
+  const sellSushi = restaurant => {
     let amount = restaurant.value * restaurantsOwned[restaurant.id]
     setSushi(sushi - amount)
     setCoins(coins + amount)
@@ -254,7 +255,7 @@ export const Game = () => {
               item={item}
               numOwned={restaurantsOwned[item.id]}
               ready={sushi >= item.value}
-              handleSell={handleSell}
+              sellSushi={sellSushi}
             />
           )
         })}

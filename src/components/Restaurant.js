@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components/macro'
 
 import cart from '../assets/cart.svg'
@@ -9,12 +9,27 @@ import franchise from '../assets/franchise.svg'
 // import bill from '../assets/bill.svg'
 import chopsticks from '../assets/chopsticks.svg'
 
-export const Restaurant = ({ item, numOwned, ready, handleSell }) => {
+export const Restaurant = ({ item, numOwned, ready, sellSushi }) => {
   const restaurantIcons = { cart, truck, bar, restaurant, franchise }
+  const coinsRef = useRef(null)
+  let coinsPerClick = item.value * numOwned
+
+  const displayPoints = () => {
+    coinsRef.current.style.opacity = '1'
+    setTimeout(() => {
+      coinsRef.current.style.opacity = '0'
+    }, 100)
+  }
 
   return (
     <Wrapper key={item.id} owned={numOwned > 0}>
-      <Alert onClick={() => handleSell(item)} ready={ready && numOwned > 0}>
+      <Alert
+        onClick={() => {
+          sellSushi(item)
+          displayPoints()
+        }}
+        ready={ready && numOwned > 0}>
+        <Points ref={coinsRef}>+{coinsPerClick}</Points>
         <img src={chopsticks} alt='' />
         <span className='arrow' />
       </Alert>
@@ -93,4 +108,24 @@ const Alert = styled.span`
       right: -4px;
     }
   }
+`
+
+const Points = styled.p`
+  color: white;
+  opacity: 0;
+  position: absolute;
+  top: -30px;
+  width: fit-content;
+  z-index: 10;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px gold;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
 `
