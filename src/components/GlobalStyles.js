@@ -8,14 +8,16 @@ export default createGlobalStyle`
     -webkit-font-smoothing: antialiased;
   }
 
-  // prevents text selection
   * {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    // prevents text selection
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    // prevents double tap to zoom on mobile devices
+    touch-action: manipulation;
   }
 
   html, body {
