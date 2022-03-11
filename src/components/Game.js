@@ -158,7 +158,7 @@ export const Game = () => {
     setTimeElapsed(timeElapsed)
   }, [])
 
-  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH SECOND BASED ON PRODUCTION RATE
+  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH MINUTE BASED ON PRODUCTION RATE
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
     if (timeElapsed > 0) {
@@ -183,6 +183,14 @@ export const Game = () => {
       displayNum = (sushi / 1000).toFixed(2) + 'k' // thousands
     }
   }
+  // TODO: use spring
+  // const compactDisplayNum = useSpring({
+  //   val: yearly ? 325 : 395,
+  //   from: { val: 395 },
+  //   config: {
+  //     duration: 200,
+  //   },
+  // })
   compactDisplayNum(sushi)
 
   // SELLS SUSHI
@@ -252,6 +260,7 @@ export const Game = () => {
         {restaurants.map(item => {
           return (
             <Restaurant
+              key={item.id}
               item={item}
               numOwned={restaurantsOwned[item.id]}
               ready={sushi >= item.value}
@@ -279,7 +288,12 @@ export const Game = () => {
           <Overview>
             <div className='sushi-info'>
               <div className='row'>
+                {/* TODO: briefly display plus symbol when sushi is produced automatically */}
                 <img src={sushiIcon} alt='sushi' />
+                {/* TODO: use react-spring for number animation */}
+                {/* <animated.span>
+              {compactDisplayNum.val.interpolate(val => `$${Math.floor(val)}`)}
+            </animated.span> */}
                 <Total className={sushi === 0 && 'none'}>{displayNum}</Total>
               </div>
               <div className='stats'>
