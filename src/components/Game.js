@@ -158,7 +158,7 @@ export const Game = () => {
     setTimeElapsed(timeElapsed)
   }, [])
 
-  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH MINUTE BASED ON PRODUCTION RATE
+  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH SECOND BASED ON PRODUCTION RATE
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
     if (timeElapsed > 0) {
