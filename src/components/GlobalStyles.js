@@ -22,6 +22,7 @@ export default createGlobalStyle`
 
   html {
      background: linear-gradient(to bottom right,#ffecb3e3,#ffb3d2ad);
+     scroll-behavior: smooth;
   }
 
   html, body {

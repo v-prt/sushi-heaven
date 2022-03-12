@@ -75,13 +75,13 @@ const Wrapper = styled.div`
   padding: 10px;
   border: 1px dotted #ccc;
   border-radius: 5px;
-  margin: 5px 0;
+  margin-bottom: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   .info {
     color: #666;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-size: 0.8rem;
     b {
       color: #373737;
@@ -90,6 +90,16 @@ const Wrapper = styled.div`
   .purchase {
     display: flex;
     align-items: center;
+    font-size: 0.9rem;
+  }
+  @media only screen and (min-width: 800px) {
+    margin: 5px 0;
+    .info {
+      margin-bottom: 10px;
+    }
+    .purchase {
+      font-size: 1rem;
+    }
   }
 `
 
@@ -98,10 +108,18 @@ const ItemDetails = styled.div`
   .header {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     img {
-      height: 25px;
+      height: 20px;
       margin-right: 10px;
+    }
+  }
+  @media only screen and (min-width: 800px) {
+    .header {
+      margin-bottom: 10px;
+      img {
+        height: 25px;
+      }
     }
   }
 `
@@ -109,17 +127,20 @@ const ItemDetails = styled.div`
 const Name = styled.p`
   font-family: 'Merienda', cursive;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #1a1a1a;
+  @media only screen and (min-width: 800px) {
+    font-size: 1.2rem;
+  }
 `
 
 const BuyBtn = styled.button`
   background: #ff6db6;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: bold;
   border: none;
-  padding: 5px 10px;
+  padding: 2px 5px 4px 5px;
   margin-right: 10px;
   transition: 0.1s ease-in-out;
   border-radius: 5px;
@@ -137,6 +158,10 @@ const BuyBtn = styled.button`
     transform: none;
     pointer-events: none;
   }
+  @media only screen and (min-width: 800px) {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+  }
 `
 
 const Cost = styled.p`
@@ -151,7 +176,7 @@ const Cost = styled.p`
 const NumOwned = styled.div`
   color: #373737;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.5rem;
   display: grid;
   place-content: center;
   text-align: center;
@@ -160,5 +185,8 @@ const NumOwned = styled.div`
   }
   span {
     font-size: 0.8rem;
+  }
+  @media only screen and (min-width: 800px) {
+    font-size: 2rem;
   }
 `

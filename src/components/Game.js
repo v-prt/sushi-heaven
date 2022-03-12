@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
+import Scroll from 'react-scroll'
 import styled from 'styled-components/macro'
-import { Link } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 import { useInterval } from '../hooks/use-interval.hook'
 import { useDocumentTitle } from '../hooks/use-document-title.hook'
@@ -16,6 +17,7 @@ import { IoReloadCircleOutline } from 'react-icons/io5'
 import { Item } from './Item'
 import { Restaurant } from './Restaurant'
 import { upgrades, restaurants } from '../data'
+let ScrollLink = Scroll.Link
 
 export const Game = () => {
   const [viewUpgrades, setViewUpgrades] = useState(true)
@@ -199,7 +201,7 @@ export const Game = () => {
     } else if (num >= 1000000) {
       compactNum = (num / 1000000).toFixed(2) + 'm' // millions
     } else if (num >= 10000) {
-      compactNum = (num / 10000).toFixed(2) + 'k' // thousands
+      compactNum = (num / 1000).toFixed(2) + 'k' // thousands
     }
     return compactNum
   }
@@ -251,6 +253,14 @@ export const Game = () => {
     }
   }
 
+  // SCROLL TO SECTION
+  // FIXME: manual scroll not working anymore?
+  // TODO: active class for nav links if section in view (only one section at a time)
+  const scrollTo = sectionId => {
+    let section = document.getElementById(sectionId)
+    section.scrollIntoView(false)
+  }
+
   // CALLING CUSTOM HOOKS
   useDocumentTitle(`Sushi Heaven - ${compactDisplayNum(sushi)} sushi`, 'Sushi Heaven')
   useKeyUp('Space', makeSushi)
@@ -258,19 +268,32 @@ export const Game = () => {
   return (
     <Wrapper>
       <Header>
-        <p className='title'>Sushi Heaven</p>
         <div className='overview'>
-          <p className='sushi'>
-            <img src={sushiImage} alt='sushi' />
-            {compactDisplayNum(sushi)}
-          </p>
-          <p className='coins'>
-            <img src={coinIcon} alt='coins' />
-            {compactDisplayNum(coins)}
-          </p>
+          <p className='title'>Sushi Heaven</p>
+          <div className='stats'>
+            <p className='sushi'>
+              <img src={sushiImage} alt='sushi' />
+              {compactDisplayNum(sushi)}
+            </p>
+            <p className='coins'>
+              <img src={coinIcon} alt='coins' />
+              {compactDisplayNum(coins)}
+            </p>
+          </div>
         </div>
+        <nav>
+          <div className='nav-link' onClick={() => scrollTo('production')}>
+            Sushi
+          </div>
+          <div className='nav-link' onClick={() => scrollTo('restaurants')}>
+            Restaurants
+          </div>
+          <div className='nav-link' onClick={() => scrollTo('console')}>
+            Console
+          </div>
+        </nav>
       </Header>
-      <ProductionArea>
+      <ProductionArea id='production'>
         <Instructions newGame={sushi === 0} className={sushi === sushiLimit && 'limit-reached'}>
           {sushi === sushiLimit && (
             <p>
@@ -287,13 +310,12 @@ export const Game = () => {
           )}
           <span className='arrow' />
         </Instructions>
-
         <Produce onClick={makeSushi} className={sushi === sushiLimit && 'disabled'}>
           <Points ref={pointsRef}>+{sushiPerClick}</Points>
           <Sushi src={sushiImage} ref={sushiRef} />
         </Produce>
       </ProductionArea>
-      <Restaurants>
+      <Restaurants id='restaurants'>
         {restaurants.map(item => {
           return (
             <Restaurant
@@ -306,7 +328,7 @@ export const Game = () => {
           )
         })}
       </Restaurants>
-      <Console>
+      <Console id='console'>
         <div className='inner'>
           <Actions>
             <Link to='/' className='action'>
@@ -329,13 +351,14 @@ export const Game = () => {
                 <img src={sushiIcon} alt='sushi' />
               </div>
               <div className='stats'>
-                <p>Stock limit: {compactDisplayNum(sushiLimit)}</p>
                 <p>
-                  <b>{productionRate}</b> produced per second
+                  +<b>{productionRate}</b> / sec
                 </p>
+                •
                 <p>
-                  <b>{sushiPerClick}</b> produced per click
+                  +<b>{sushiPerClick}</b> / click
                 </p>
+                •<p>Limit: {compactDisplayNum(sushiLimit)}</p>
               </div>
             </div>
             <div className='coins-info'>
@@ -427,40 +450,60 @@ const Wrapper = styled.div`
 `
 
 const Header = styled.header`
-  background: #373737;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
   position: fixed;
   top: 0;
   z-index: 99;
-  .title {
-    font-family: 'Emilys Candy';
-    font-size: 1.3rem;
-    color: #fff;
-    margin: 0 10px;
-  }
   .overview {
+    background: #373737;
     display: flex;
     align-items: center;
-    .sushi {
-      color: #ff4da6;
-    }
-    .coins {
-      color: gold;
-    }
-    .sushi,
-    .coins {
+    justify-content: space-between;
+    padding: 10px;
+    .title {
+      font-family: 'Emilys Candy';
+      font-size: 1.3rem;
+      color: #fff;
       margin: 0 10px;
+    }
+    .stats {
       display: flex;
       align-items: center;
-      font-weight: bold;
-      img {
-        height: 20px;
-        margin-right: 5px;
+      .sushi {
+        color: #ff4da6;
+      }
+      .coins {
+        color: gold;
+      }
+      .sushi,
+      .coins {
+        margin: 0 10px;
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        img {
+          height: 20px;
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+  nav {
+    background: #373737cc;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 10px;
+    .nav-link {
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0 10px;
+      font-size: 0.8rem;
+      text-decoration: none;
+      &.active {
+        color: #fff;
+        border-bottom: 2px solid #fff;
       }
     }
   }
@@ -470,7 +513,7 @@ const Header = styled.header`
 `
 
 const ProductionArea = styled.section`
-  min-height: 500px;
+  height: calc(100vh - 45px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -561,18 +604,19 @@ const Sushi = styled.img`
 `
 
 const Restaurants = styled.section`
+  height: calc(100vh - 165px);
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin: 20px;
+  padding: 20px;
   @media only screen and (min-width: 800px) {
+    height: 100vh;
     flex-direction: column;
+    justify-content: space-between;
   }
 `
 
 const Console = styled.div`
-  height: 100vh;
+  height: calc(100vh - 80px);
   display: flex;
   .inner {
     background: #fff;
@@ -585,7 +629,10 @@ const Console = styled.div`
     margin: 20px;
     border-radius: 10px;
     padding: 10px;
-    @media only screen and (min-width: 800px) {
+  }
+  @media only screen and (min-width: 800px) {
+    height: 100vh;
+    .inner {
       margin: 30px;
     }
   }
@@ -598,7 +645,7 @@ const Actions = styled.div`
     background: #f2f2f2;
     font-family: 'Raleway', sans-serif;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #999;
     flex: 1;
     text-decoration: none;
@@ -614,11 +661,19 @@ const Actions = styled.div`
     .icon {
       display: grid;
       margin-right: 5px;
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
     &:hover:not(:active) {
       background: #fe5a58;
       color: white;
+    }
+  }
+  @media only screen and (min-width: 800px) {
+    .action {
+      font-size: 0.9rem;
+      .icon {
+        font-size: 1.1rem;
+      }
     }
   }
 `
@@ -627,7 +682,6 @@ const Overview = styled.div`
   display: flex;
   flex-direction: column;
   text-align: right;
-  margin: 10px;
   .sushi-info,
   .coins-info {
     padding: 10px;
@@ -641,17 +695,26 @@ const Overview = styled.div`
       }
     }
     .stats {
-      font-size: 0.8rem;
       color: #666;
+      display: flex;
+      justify-content: flex-end;
+      /* justify-content: space-evenly; */
+      font-size: 0.8rem;
+      p {
+        margin: 0 5px;
+      }
       b {
         color: #373737;
       }
     }
   }
+  @media only screen and (min-width: 800px) {
+    margin: 10px;
+  }
 `
 
 const Total = styled.h3`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #ff6db6;
   &.coins {
@@ -664,6 +727,9 @@ const Total = styled.h3`
     color: #999;
     font-size: 0.8rem;
   }
+  @media only screen and (min-width: 800px) {
+    font-size: 2rem;
+  }
 `
 
 const MenuTabs = styled.div`
@@ -673,7 +739,7 @@ const MenuTabs = styled.div`
     background: #e6e6e6;
     color: #666;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     flex: 1;
     padding: 10px;
     border-bottom: 1px solid #e6e6e6;
@@ -690,6 +756,11 @@ const MenuTabs = styled.div`
       background: #f7f7f7;
       color: #373737;
       border-bottom: 1px solid transparent;
+    }
+  }
+  @media only screen and (min-width: 800px) {
+    h3 {
+      font-size: 1.2rem;
     }
   }
 `

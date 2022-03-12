@@ -59,6 +59,9 @@ const Wrapper = styled.div`
     height: 70px;
     margin: 10px;
   }
+  @media only screen and (min-width: 800px) {
+    flex: none;
+  }
 `
 
 const Alert = styled.span`
