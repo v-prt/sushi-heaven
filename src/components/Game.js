@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Scroll from 'react-scroll'
 import styled from 'styled-components/macro'
-import { NavLink, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { useInterval } from '../hooks/use-interval.hook'
 import { useDocumentTitle } from '../hooks/use-document-title.hook'
@@ -17,7 +16,6 @@ import { IoReloadCircleOutline } from 'react-icons/io5'
 import { Item } from './Item'
 import { Restaurant } from './Restaurant'
 import { upgrades, restaurants } from '../data'
-let ScrollLink = Scroll.Link
 
 export const Game = () => {
   const [viewUpgrades, setViewUpgrades] = useState(true)
