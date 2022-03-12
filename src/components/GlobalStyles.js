@@ -20,10 +20,17 @@ export default createGlobalStyle`
     touch-action: manipulation;
   }
 
+  html {
+     background: linear-gradient(to bottom right,#ffecb3e3,#ffb3d2ad);
+  }
+
   html, body {
+    max-width: 100vw;
+    min-height: 100vh;  
     overflow-x: hidden;
     overscroll-behavior-y: none;
     overscroll-behavior-x: none;
+    line-height: 1.25;
   }
 
   html, body, div,
@@ -31,11 +38,6 @@ export default createGlobalStyle`
   h1, h2, h3, h4, h5, h6, p,
   text {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  }
-
-  html, body {
-    max-width: 100vw;
-    min-height: 100vh;
   }
 
 
@@ -62,6 +64,7 @@ export default createGlobalStyle`
     border: 0;
     vertical-align: baseline;
   }
+
   /* HTML5 display-role reset for older browsers */
   article, aside, details, figcaption, figure,
   footer, header, hgroup, menu, nav, section {
@@ -71,19 +74,15 @@ export default createGlobalStyle`
   ol, ul {
     list-style: none;
   }
+
   blockquote, q {
     quotes: none;
   }
+  
   blockquote:before, blockquote:after,
   q:before, q:after {
     content: '';
     content: none;
-  }
-
-  body {
-    line-height: 1.25;
-    /* background: linear-gradient(to bottom right, #ffb3d9, #b3daff); */
-    background: linear-gradient(to bottom right,#ffecb3e3,#ffb3d2ad);
   }
 
   button {

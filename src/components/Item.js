@@ -17,18 +17,7 @@ import franchise from '../assets/franchise.svg'
 export const Item = ({ item, type, cost, currency, available, numOwned, purchase }) => {
   const upgradeIcons = { megaCursor, autoCursor, jiro, farm, factory }
   const restaurantIcons = { cart, truck, bar, restaurant, franchise }
-
   const upgrade = useRef(null)
-
-  const itemUse = () => {
-    if (type === 'restaurant') {
-      return `Sells ${item.value} sushi per click.`
-    } else if (item.id === 'megaCursor') {
-      return `Increases sushi per click by ${item.value}.`
-    } else {
-      return `Produces ${item.value} sushi per second.`
-    }
-  }
 
   return (
     <Wrapper id={item.id} ref={upgrade}>
@@ -38,6 +27,28 @@ export const Item = ({ item, type, cost, currency, available, numOwned, purchase
           {type === 'restaurant' && <img src={restaurantIcons[item.id]} alt='' />}
           <Name>{item.name}</Name>
         </div>
+        <div className='info'>
+          <p>
+            {type === 'restaurant' ? (
+              <>
+                Sells <b>{item.value}</b> sushi per click
+              </>
+            ) : item.id === 'megaCursor' ? (
+              <>
+                Increases sushi per click by <b>{item.value}</b>
+              </>
+            ) : (
+              <>
+                Produces <b>{item.value}</b> sushi per second
+              </>
+            )}
+          </p>
+          {item.stock && (
+            <p>
+              Sushi stock limit: <b>+{item.stock}</b>
+            </p>
+          )}
+        </div>
         <div className='purchase'>
           <BuyBtn
             className={type === 'restaurant' && 'coins'}
@@ -45,12 +56,9 @@ export const Item = ({ item, type, cost, currency, available, numOwned, purchase
             disabled={!available}>
             Buy
           </BuyBtn>
-          <div className='info'>
-            <Cost className={!available && 'not-available'}>
-              <RiMoneyDollarCircleLine /> {cost} {currency}
-            </Cost>
-            <Use>{itemUse()}</Use>
-          </div>
+          <Cost className={!available && 'not-available'}>
+            <RiMoneyDollarCircleLine /> {cost} {currency}
+          </Cost>
         </div>
       </ItemDetails>
       <NumOwned className={numOwned === 0 && 'none'}>
@@ -63,7 +71,6 @@ export const Item = ({ item, type, cost, currency, available, numOwned, purchase
 
 const Wrapper = styled.div`
   background: #fff;
-  color: #1a1a1a;
   width: 100%;
   padding: 10px;
   border: 1px dotted #ccc;
@@ -72,6 +79,14 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  .info {
+    color: #666;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    b {
+      color: #373737;
+    }
+  }
   .purchase {
     display: flex;
     align-items: center;
@@ -95,6 +110,7 @@ const Name = styled.p`
   font-family: 'Merienda', cursive;
   font-weight: bold;
   font-size: 1.2rem;
+  color: #1a1a1a;
 `
 
 const BuyBtn = styled.button`
@@ -128,13 +144,8 @@ const Cost = styled.p`
   display: flex;
   align-items: center;
   &.not-available {
-    color: #fd6743;
+    color: #fe5a58;
   }
-`
-
-const Use = styled.p`
-  font-size: 0.8rem;
-  color: #666;
 `
 
 const NumOwned = styled.div`

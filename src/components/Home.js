@@ -53,7 +53,7 @@ const Wrapper = styled.div`
     &:hover,
     &:focus {
       outline: none;
-      background: #fd6743;
+      background: #fe5a58;
       color: white;
     }
   }
@@ -63,7 +63,7 @@ const Title = styled.h1`
   font-size: 5rem;
   font-family: 'Emilys Candy';
   text-align: center;
-  color: #fd6743;
+  color: #fe5a58;
 `
 
 const Introduction = styled.div`

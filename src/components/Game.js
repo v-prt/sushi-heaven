@@ -18,7 +18,6 @@ import { Restaurant } from './Restaurant'
 import { upgrades, restaurants } from '../data'
 
 export const Game = () => {
-  const [newGame, setNewGame] = useState(false)
   const [viewUpgrades, setViewUpgrades] = useState(true)
   const [viewRestaurants, setViewRestaurants] = useState(false)
   const [sushiPerClick, setSushiPerClick] = useState(1)
@@ -67,13 +66,6 @@ export const Game = () => {
     'restaurant-cost'
   )
 
-  // SETS NEW GAME BASED ON SUSHI STOCK
-  useEffect(() => {
-    if (sushi > 0) {
-      setNewGame(false)
-    } else setNewGame(true)
-  }, [sushi])
-
   // SETS SUSHI PER CLICK
   useEffect(() => {
     setSushiPerClick(3 * upgradesOwned['megaCursor'] + 1)
@@ -83,17 +75,23 @@ export const Game = () => {
   const pointsRef = useRef(null)
   const sushiRef = useRef(null)
   const makeSushi = () => {
-    setSushi(sushi + sushiPerClick)
-    let randomTop = Math.floor(Math.random() * 50) + 40
-    let randomLeft = Math.floor(Math.random() * 50) + 100
-    pointsRef.current.style.top = `${randomTop}px`
-    pointsRef.current.style.left = `${randomLeft}px`
-    pointsRef.current.style.opacity = '1'
-    sushiRef.current.style.transform = 'scale(0.9)'
-    setTimeout(() => {
-      pointsRef.current.style.opacity = '0'
-      sushiRef.current.style.transform = 'scale(1)'
-    }, 100)
+    if (sushi !== sushiLimit) {
+      if (sushi + sushiPerClick >= sushiLimit) {
+        setSushi(sushiLimit)
+      } else {
+        setSushi(sushi + sushiPerClick)
+      }
+      let randomTop = Math.floor(Math.random() * 50) + 40
+      let randomLeft = Math.floor(Math.random() * 50) + 100
+      pointsRef.current.style.top = `${randomTop}px`
+      pointsRef.current.style.left = `${randomLeft}px`
+      pointsRef.current.style.opacity = '1'
+      sushiRef.current.style.transform = 'scale(0.9)'
+      setTimeout(() => {
+        pointsRef.current.style.opacity = '0'
+        sushiRef.current.style.transform = 'scale(1)'
+      }, 100)
+    }
   }
 
   // BUY UPGRADE
@@ -124,8 +122,21 @@ export const Game = () => {
     }
   }
 
+  // CALCULATE SUSHI LIMIT
+  const calcSushiLimit = () => {
+    let num = 0
+    num =
+      1000 * restaurantsOwned['cart'] +
+      10000 * restaurantsOwned['truck'] +
+      100000 * restaurantsOwned['bar'] +
+      1000000 * restaurantsOwned['restaurant'] +
+      10000000 * restaurantsOwned['franchise']
+    return num
+  }
+  const sushiLimit = calcSushiLimit()
+
   // CALCULATE PRODUCTION RATE
-  const calcProductionRate = upgradesOwned => {
+  const calcProductionRate = () => {
     let num = 0
     num =
       1 * upgradesOwned['autoCursor'] +
@@ -134,7 +145,7 @@ export const Game = () => {
       150 * upgradesOwned['factory']
     return num
   }
-  const productionRate = calcProductionRate(upgradesOwned)
+  const productionRate = calcProductionRate()
 
   // BUY RESTAURANT
   // subtract coins, increase num restaurants owned & cost
@@ -158,40 +169,40 @@ export const Game = () => {
     setTimeElapsed(timeElapsed)
   }, [])
 
-  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH SECOND BASED ON PRODUCTION RATE
+  // INCREASE SUSHI BASED ON TIME ELAPSED OR EACH SECOND BASED ON PRODUCTION RATE, UP TO SUSHI LIMIT
   // this custom hook can be used like window.setInterval as long as you follow the rules of hooks
   useInterval(() => {
     if (timeElapsed > 0) {
       let sushiProduced = productionRate * timeElapsed
-      setSushi(sushi + sushiProduced)
+      if (sushi + sushiProduced >= sushiLimit) {
+        setSushi(sushiLimit)
+      } else {
+        setSushi(sushi + sushiProduced)
+      }
       setTimeElapsed(0)
-    } else setSushi(sushi + productionRate)
+    } else if (sushi + productionRate >= sushiLimit) {
+      setSushi(sushiLimit)
+    } else {
+      setSushi(sushi + productionRate)
+    }
     // stores the number of milliseconds since midnight 1/1/1970
     localStorage.setItem('timer', new Date().getTime())
   }, 1000)
 
   // COMPACT DISPLAY NUM
-  let displayNum = sushi
   const compactDisplayNum = num => {
+    let compactNum = num
     if (num >= 1000000000000) {
-      displayNum = (sushi / 1000000000000).toFixed(2) + 't' // trillions
+      compactNum = (num / 1000000000000).toFixed(2) + 't' // trillions
     } else if (num >= 1000000000) {
-      displayNum = (sushi / 1000000000).toFixed(2) + 'b' // billions
+      compactNum = (num / 1000000000).toFixed(2) + 'b' // billions
     } else if (num >= 1000000) {
-      displayNum = (sushi / 1000000).toFixed(2) + 'm' // millions
-    } else if (num >= 1000) {
-      displayNum = (sushi / 1000).toFixed(2) + 'k' // thousands
+      compactNum = (num / 1000000).toFixed(2) + 'm' // millions
+    } else if (num >= 10000) {
+      compactNum = (num / 10000).toFixed(2) + 'k' // thousands
     }
+    return compactNum
   }
-  // TODO: use spring
-  // const compactDisplayNum = useSpring({
-  //   val: yearly ? 325 : 395,
-  //   from: { val: 395 },
-  //   config: {
-  //     duration: 200,
-  //   },
-  // })
-  compactDisplayNum(sushi)
 
   // SELLS SUSHI
   const sellSushi = restaurant => {
@@ -241,17 +252,30 @@ export const Game = () => {
   }
 
   // CALLING CUSTOM HOOKS
-  useDocumentTitle(`Sushi Heaven - ${displayNum} sushi`, 'Sushi Heaven')
+  useDocumentTitle(`Sushi Heaven - ${compactDisplayNum(sushi)} sushi`, 'Sushi Heaven')
   useKeyUp('Space', makeSushi)
 
   return (
     <Wrapper>
       <ProductionArea>
-        <Instructions newGame={newGame}>
-          Click me or tap the spacebar to make sushi!
+        <Instructions newGame={sushi === 0} className={sushi === sushiLimit && 'limit-reached'}>
+          {sushi === sushiLimit && (
+            <p>
+              You've reached your stock limit. Buy restaurants to increase your limit and sell more
+              sushi.
+              <span className='arrow' />
+            </p>
+          )}
+          {sushi === 0 && (
+            <p>
+              Click me or tap the spacebar to make sushi!
+              <span className='arrow' />
+            </p>
+          )}
           <span className='arrow' />
         </Instructions>
-        <Produce onClick={makeSushi}>
+
+        <Produce onClick={makeSushi} className={sushi === sushiLimit && 'disabled'}>
           <Points ref={pointsRef}>+{sushiPerClick}</Points>
           <Sushi src={sushiImage} ref={sushiRef} />
         </Produce>
@@ -288,27 +312,25 @@ export const Game = () => {
           <Overview>
             <div className='sushi-info'>
               <div className='row'>
-                {/* TODO: briefly display plus symbol when sushi is produced automatically */}
+                <Total className={sushi === 0 && 'none'}>{compactDisplayNum(sushi)}</Total>
                 <img src={sushiIcon} alt='sushi' />
-                {/* TODO: use react-spring for number animation */}
-                {/* <animated.span>
-              {compactDisplayNum.val.interpolate(val => `$${Math.floor(val)}`)}
-            </animated.span> */}
-                <Total className={sushi === 0 && 'none'}>{displayNum}</Total>
               </div>
               <div className='stats'>
+                <p>Stock limit: {compactDisplayNum(sushiLimit)}</p>
                 <p>
-                  <strong>{productionRate}</strong> produced per second
+                  <b>{productionRate}</b> produced per second
                 </p>
                 <p>
-                  <strong>{sushiPerClick}</strong> produced per click
+                  <b>{sushiPerClick}</b> produced per click
                 </p>
               </div>
             </div>
-            <div className='income-info'>
+            <div className='coins-info'>
               <div className='row'>
+                <Total className={`coins ${coins === 0 && 'none'}`}>
+                  {compactDisplayNum(coins)}
+                </Total>
                 <img src={coinIcon} alt='sushi' />
-                <Total className={`coins ${coins === 0 && 'none'}`}>{coins}</Total>
               </div>
               <div className='stats'>
                 <p className='info-text'>(earn coins by fulfilling orders)</p>
@@ -387,7 +409,7 @@ const Wrapper = styled.div`
   min-width: 100vw;
   @media only screen and (min-width: 800px) {
     flex-direction: row;
-    /* align-items: flex-end; */
+    align-items: flex-end;
   }
 `
 
@@ -403,45 +425,41 @@ const ProductionArea = styled.section`
   }
 `
 
-const Restaurants = styled.section`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin: 20px;
-  @media only screen and (min-width: 800px) {
-    flex-direction: column;
-  }
-`
-
 const Instructions = styled.div`
   visibility: ${props => (props.newGame ? 'visible' : 'hidden')};
   opacity: ${props => (props.newGame ? '1' : '0')};
-  transition: 0.2s ease-in-out;
-  background: rgba(255, 255, 255, 0.7);
-  border: 5px solid #fff;
-  border-radius: 5px;
-  padding: 20px;
-  width: 250px;
-  text-align: center;
-  position: relative;
-  animation: ${props =>
-    props.newGame ? 'bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98)' : 'none'};
-  .arrow {
-    background: #fff;
-    height: 7px;
-    width: 7px;
-    transform: rotate(45deg);
-    position: absolute;
-    left: 120px;
-    bottom: -8px;
+  &.limit-reached {
+    visibility: visible;
+    opacity: 1;
   }
-  @keyframes bounce {
-    from {
-      transform: translateY(0px);
+  p {
+    background: rgba(255, 255, 255, 0.7);
+    border: 10px solid #fff;
+    border-radius: 5px;
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    font-size: 0.9rem;
+    position: relative;
+    transition: 0.2s ease-in-out;
+    animation: ${props =>
+      props.newGame ? 'bounce 1s infinite alternate cubic-bezier(0.13, 0.71, 0.56, 0.98)' : 'none'};
+    .arrow {
+      background: #fff;
+      height: 10px;
+      width: 10px;
+      transform: rotate(45deg);
+      position: absolute;
+      left: 110px;
+      bottom: -15px;
     }
-    to {
-      transform: translateY(-15px);
+    @keyframes bounce {
+      from {
+        transform: translateY(0px);
+      }
+      to {
+        transform: translateY(-15px);
+      }
     }
   }
 `
@@ -450,8 +468,14 @@ const Produce = styled.div`
   margin: 30px;
   position: relative;
   cursor: pointer;
+  transition: 0.2s ease-in-out;
   &:focus {
     outline: none;
+  }
+  &.disabled {
+    opacity: 0.5;
+    filter: grayscale(1);
+    pointer-events: none;
   }
 `
 
@@ -476,6 +500,17 @@ const Points = styled.p`
 const Sushi = styled.img`
   width: 300px;
   transition: 0.2s ease-in-out;
+`
+
+const Restaurants = styled.section`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+  @media only screen and (min-width: 800px) {
+    flex-direction: column;
+  }
 `
 
 const Console = styled.div`
@@ -524,7 +559,7 @@ const Actions = styled.div`
       font-size: 1.1rem;
     }
     &:hover:not(:active) {
-      background: #fd6743;
+      background: #fe5a58;
       color: white;
     }
   }
@@ -533,26 +568,25 @@ const Actions = styled.div`
 const Overview = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: right;
   margin: 10px;
   .sushi-info,
-  .income-info {
+  .coins-info {
     padding: 10px;
     .row {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       img {
         height: 25px;
-        margin-right: 5px;
+        margin-left: 5px;
       }
     }
-    p {
+    .stats {
+      font-size: 0.8rem;
       color: #666;
-      strong {
+      b {
         color: #373737;
-      }
-      &.info-text {
-        font-size: 0.8rem;
-        color: #999;
       }
     }
   }
@@ -567,6 +601,10 @@ const Total = styled.h3`
   }
   &.none {
     color: #999;
+  }
+  .limit {
+    color: #999;
+    font-size: 0.8rem;
   }
 `
 
@@ -592,7 +630,7 @@ const MenuTabs = styled.div`
     }
     &.active {
       background: #f7f7f7;
-      color: #1a1a1a;
+      color: #373737;
       border-bottom: 1px solid transparent;
     }
   }

@@ -1,12 +1,12 @@
 import React, { useRef } from 'react'
 import styled from 'styled-components/macro'
+import { BsFillPatchExclamationFill } from 'react-icons/bs'
 
 import cart from '../assets/cart.svg'
 import truck from '../assets/truck.svg'
 import bar from '../assets/bar.svg'
 import restaurant from '../assets/restaurant.svg'
 import franchise from '../assets/franchise.svg'
-// import bill from '../assets/bill.svg'
 import chopsticks from '../assets/chopsticks.svg'
 
 export const Restaurant = ({ item, numOwned, ready, sellSushi }) => {
@@ -29,8 +29,11 @@ export const Restaurant = ({ item, numOwned, ready, sellSushi }) => {
           displayPoints()
         }}
         ready={ready && numOwned > 0}>
-        <Points ref={coinsRef}>+{coinsPerClick}</Points>
-        <img src={chopsticks} alt='' />
+        <Points ref={coinsRef}>+ ${coinsPerClick}</Points>
+        <span className='icon'>
+          <BsFillPatchExclamationFill />
+        </span>
+        <img className='chopsticks' src={chopsticks} alt='' />
         <span className='arrow' />
       </Alert>
       <img src={restaurantIcons[item.id]} alt={item.name} />
@@ -70,7 +73,12 @@ const Alert = styled.span`
   font-size: 0.8rem;
   top: -70px;
   cursor: pointer;
-  img {
+  .icon {
+    color: #fe5a58;
+    position: absolute;
+    top: 5px;
+  }
+  .chopsticks {
     height: 30px;
     animation: wiggle 0.7s infinite ease-in-out;
     @keyframes wiggle {
@@ -117,7 +125,7 @@ const Points = styled.p`
   top: -30px;
   width: fit-content;
   z-index: 10;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   text-shadow: 0 0 5px gold;
   -webkit-touch-callout: none;
