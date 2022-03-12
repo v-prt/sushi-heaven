@@ -17,8 +17,7 @@ export default createGlobalStyle`
     -ms-user-select: none;
     user-select: none;
     // prevents double tap to zoom on mobile devices
-    /* touch-action: manipulation; */
-    touch-action: none;
+    touch-action: manipulation;
   }
 
   html {
