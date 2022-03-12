@@ -257,6 +257,19 @@ export const Game = () => {
 
   return (
     <Wrapper>
+      <Header>
+        <p className='title'>Sushi Heaven</p>
+        <div className='overview'>
+          <p className='sushi'>
+            <img src={sushiImage} alt='sushi' />
+            {compactDisplayNum(sushi)}
+          </p>
+          <p className='coins'>
+            <img src={coinIcon} alt='coins' />
+            {compactDisplayNum(coins)}
+          </p>
+        </div>
+      </Header>
       <ProductionArea>
         <Instructions newGame={sushi === 0} className={sushi === sushiLimit && 'limit-reached'}>
           {sushi === sushiLimit && (
@@ -413,13 +426,57 @@ const Wrapper = styled.div`
   }
 `
 
+const Header = styled.header`
+  background: #373737;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  z-index: 99;
+  .title {
+    font-family: 'Emilys Candy';
+    font-size: 1.3rem;
+    color: #fff;
+    margin: 0 10px;
+  }
+  .overview {
+    display: flex;
+    align-items: center;
+    .sushi {
+      color: #ff4da6;
+    }
+    .coins {
+      color: gold;
+    }
+    .sushi,
+    .coins {
+      margin: 0 10px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      img {
+        height: 20px;
+        margin-right: 5px;
+      }
+    }
+  }
+  @media only screen and (min-width: 800px) {
+    display: none;
+  }
+`
+
 const ProductionArea = styled.section`
+  min-height: 500px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: 40px 0;
+  justify-content: flex-end;
+  margin: 80px 0 40px 0;
   @media only screen and (min-width: 800px) {
     margin: 0;
   }
@@ -428,6 +485,7 @@ const ProductionArea = styled.section`
 const Instructions = styled.div`
   visibility: ${props => (props.newGame ? 'visible' : 'hidden')};
   opacity: ${props => (props.newGame ? '1' : '0')};
+  min-height: 140px;
   &.limit-reached {
     visibility: visible;
     opacity: 1;
